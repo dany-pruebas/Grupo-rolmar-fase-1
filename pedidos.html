@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedidos — Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --danger: #b3261e;
+    --success: #1a7f37;
+    --warning: #9a6700;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:36px; height:36px; border-radius:8px;
+    background: var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family: Georgia, serif; font-weight:700; font-size:15px;
+  }
+  .brand-name{ font-family: Georgia, serif; font-weight:700; font-size:16px; color: var(--navy); }
+  a.back{ font-size:13px; color: var(--navy); text-decoration:none; font-weight:600; }
+
+  main{ max-width: 780px; margin:0 auto; padding: 24px 20px 60px; }
+
+  .filters{
+    display:flex;
+    gap:8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .filter-btn{
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .filter-btn.active{
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+
+  .order-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .order-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom: 10px;
+  }
+  .order-customer{ font-size: 14px; font-weight: 700; }
+  .order-email{ font-size: 12px; color: var(--text-muted); }
+  .order-date{ font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .status-badge{
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .status-pendiente{ background: #fdf2d0; color: var(--warning); }
+  .status-preparando{ background: var(--navy-soft); color: var(--navy); }
+  .status-enviado{ background: #d9ecff; color: #0b5fa5; }
+  .status-completado{ background: #ddf3e2; color: var(--success); }
+  .status-cancelado{ background: #fbe1df; color: var(--danger); }
+
+  .order-items{
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+  .order-item-row{
+    display:flex;
+    justify-content:space-between;
+    font-size: 13px;
+    padding: 3px 0;
+  }
+  .order-item-name{ color: var(--text); }
+  .order-item-qty{ color: var(--text-muted); }
+
+  .order-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top: 1px solid var(--line);
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  .order-total{ font-size: 15px; font-weight: 700; color: var(--navy); }
+  .order-points{ font-size: 11px; color: var(--success); }
+
+  select.status-select{
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 8px;
+    color: var(--text);
+    background: var(--white);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy-dark);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 60;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px){
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 14px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">GR</div>
+    <div class="brand-name">Pedidos</div>
+  </div>
+  <a class="back" href="index.html">← Panel</a>
+</header>
+
+<main>
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-status="todos">Todos</button>
+    <button class="filter-btn" data-status="pendiente">Pendientes</button>
+    <button class="filter-btn" data-status="preparando">Preparando</button>
+    <button class="filter-btn" data-status="enviado">Enviados</button>
+    <button class="filter-btn" data-status="completado">Completados</button>
+    <button class="filter-btn" data-status="cancelado">Cancelados</button>
+  </div>
+
+  <div id="ordersWrap">
+    <div class="empty-state" id="emptyState">Cargando pedidos...</div>
+    <div id="ordersList"></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const ORDERS_API = '/.netlify/functions/orders';
+  let orders = [];
+  let currentFilter = 'todos';
+  let toastTimer;
+
+  const toast = document.getElementById('toast');
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  function formatQ(n){
+    return 'Q' + Number(n).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatDate(ts){
+    return new Date(ts).toLocaleString('es-GT', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  const STATUS_LABELS = {
+    pendiente: 'Pendiente',
+    preparando: 'Preparando',
+    enviado: 'Enviado',
+    completado: 'Completado',
+    cancelado: 'Cancelado'
+  };
+
+  async function loadOrders(){
+    try {
+      const res = await fetch(ORDERS_API);
+      if (!res.ok) throw new Error();
+      orders = await res.json();
+    } catch (err) {
+      orders = [];
+      showToast('No se pudieron cargar los pedidos');
+    }
+    render();
+  }
+
+  function render(){
+    const list = document.getElementById('ordersList');
+    const emptyState = document.getElementById('emptyState');
+    const filtered = currentFilter === 'todos' ? orders : orders.filter(o => o.status === currentFilter);
+
+    if (filtered.length === 0){
+      list.innerHTML = '';
+      emptyState.style.display = 'block';
+      emptyState.textContent = orders.length === 0 ? 'Todavía no hay pedidos.' : 'No hay pedidos con este filtro.';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+
+    list.innerHTML = filtered.map(o => `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <div class="order-customer">${escapeHtml(o.customerName)}</div>
+            <div class="order-email">${escapeHtml(o.email)}</div>
+            <div class="order-date">${formatDate(o.createdAt)}</div>
+          </div>
+          <span class="status-badge status-${o.status}">${STATUS_LABELS[o.status] || o.status}</span>
+        </div>
+        <div class="order-items">
+          ${o.items.map(it => `
+            <div class="order-item-row">
+              <span class="order-item-name">${escapeHtml(it.name)}</span>
+              <span class="order-item-qty">${it.quantity} × ${formatQ(it.price)}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="order-bottom">
+          <div>
+            <div class="order-total">${formatQ(o.total)}</div>
+            <div class="order-points">+${o.pointsEarned} puntos al cliente</div>
+          </div>
+          <select class="status-select" data-id="${o.id}">
+            ${Object.keys(STATUS_LABELS).map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${STATUS_LABELS[s]}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('filters').addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.status;
+    render();
+  });
+
+  document.getElementById('ordersList').addEventListener('change', async (e) => {
+    const select = e.target.closest('.status-select');
+    if (!select) return;
+    const id = select.dataset.id;
+    const status = select.value;
+
+    try {
+      const res = await fetch(`${ORDERS_API}?id=${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      if (!res.ok) throw new Error();
+      const order = orders.find(o => o.id === id);
+      if (order) order.status = status;
+      showToast('Estado actualizado');
+      render();
+    } catch (err) {
+      showToast('No se pudo actualizar el estado');
+      loadOrders();
+    }
+  });
+
+  loadOrders();
+</script>
+
+</body>
+</html>
