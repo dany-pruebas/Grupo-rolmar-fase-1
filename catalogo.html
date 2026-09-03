@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo · Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --danger: #b3261e;
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+    z-index: 10;
+  }
+
+  .header-left{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  .back-link{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    color: var(--navy);
+    text-decoration:none;
+    border:1px solid var(--line);
+  }
+  .back-link:hover{ border-color: var(--navy); }
+  .back-link svg{ width:18px; height:18px; }
+
+  .page-title{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .page-sub{
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .btn{
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 9px 16px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  .btn-primary{
+    background: var(--navy);
+    color: var(--white);
+  }
+  .btn-primary:hover{ background: var(--navy-dark); }
+
+  .btn-secondary{
+    background: var(--white);
+    color: var(--text);
+    border-color: var(--line);
+  }
+  .btn-secondary:hover{ border-color: var(--navy); }
+
+  .btn-danger-text{
+    background: none;
+    color: var(--danger);
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  main{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+  }
+
+  .toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 20px;
+  }
+
+  .search{
+    flex:1;
+    max-width: 320px;
+    margin-right: 16px;
+  }
+
+  .search input{
+    width:100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .search input:focus{ outline: none; border-color: var(--navy); }
+
+  /* ---------- Product grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .card-photo{
+    width:100%;
+    aspect-ratio: 1 / 1;
+    background: var(--navy-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  .card-photo img{
+    width:100%;
+    height:100%;
+    object-fit: cover;
+    display:block;
+  }
+
+  .card-photo svg{
+    width:32px;
+    height:32px;
+    color: var(--navy);
+    opacity:.4;
+  }
+
+  .card-body{
+    padding: 12px 14px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex:1;
+  }
+
+  .card-name{
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .card-desc{
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height:1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+
+  .card-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:auto;
+    padding-top:8px;
+  }
+
+  .card-price{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .card-qty{
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .card-qty.low{ color: var(--danger); border-color: #f2c9c6; background:#fbebea; }
+
+  .card-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 8px 14px 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  .link-btn{
+    background:none;
+    border:none;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    display:none;
+    position: fixed;
+    inset:0;
+    background: rgba(13,23,48,0.45);
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+    z-index: 50;
+  }
+  .overlay.show{ display:flex; }
+
+  .modal{
+    background: var(--white);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y:auto;
+    padding: 22px;
+  }
+
+  .modal-title{
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 16px;
+  }
+
+  .field{ margin-bottom: 14px; }
+
+  .field label{
+    display:block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .field input,
+  .field textarea{
+    width:100%;
+    padding: 9px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+  }
+  .field input:focus,
+  .field textarea:focus{ outline:none; border-color: var(--navy); }
+
+  .row-2{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .photo-upload{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+
+  .photo-preview{
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    background: var(--navy-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .photo-preview img{ width:100%; height:100%; object-fit:cover; }
+  .photo-preview svg{ width:24px; height:24px; color: var(--navy); opacity:.4; }
+
+  .file-label{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .file-label:hover{ border-color: var(--navy); }
+  .file-label input{ display:none; }
+
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .field-error{
+    font-size: 11px;
+    color: var(--danger);
+    margin-top: 4px;
+    display:none;
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy-dark);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 60;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px){
+    .toolbar{ flex-direction:column; align-items:stretch; gap:12px; }
+    .search{ max-width:none; margin-right:0; }
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 16px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a class="back-link" href="index.html" title="Volver al panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <div>
+      <div class="page-title">Catálogo</div>
+      <div class="page-sub">Productos que verán los clientes en la app</div>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="btnNew">+ Agregar producto</button>
+</header>
+
+<main>
+
+  <div class="toolbar">
+    <div class="search">
+      <input type="text" id="searchInput" placeholder="Buscar producto...">
+    </div>
+    <div class="page-sub" id="countLabel">0 productos</div>
+  </div>
+
+  <div id="gridWrap">
+    <div class="empty-state" id="emptyState">Cargando catálogo...</div>
+    <div class="grid" id="grid" style="display:none;"></div>
+  </div>
+
+</main>
+
+<!-- Modal: crear / editar producto -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Agregar producto</div>
+    <form id="productForm">
+      <input type="hidden" id="productId">
+
+      <div class="field">
+        <label>Foto del producto</label>
+        <div class="photo-upload">
+          <div class="photo-preview" id="photoPreview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+          <label class="file-label">
+            Elegir imagen
+            <input type="file" id="photoInput" accept="image/*">
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="nameInput">Nombre del producto</label>
+        <input type="text" id="nameInput" placeholder="Ej. Edredón matrimonial gris" required>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="priceInput">Precio (Q)</label>
+          <input type="number" id="priceInput" min="0" step="0.01" placeholder="0.00" required>
+        </div>
+        <div class="field">
+          <label for="qtyInput">Cantidad disponible</label>
+          <input type="number" id="qtyInput" min="0" step="1" placeholder="0" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="descInput">Descripción</label>
+        <textarea id="descInput" rows="3" placeholder="Medidas, material, colores disponibles..."></textarea>
+      </div>
+
+      <div class="field-error" id="formError">Completa el nombre, precio y cantidad.</div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnSave">Guardar producto</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = '/.netlify/functions/catalog';
+
+  const grid = document.getElementById('grid');
+  const emptyState = document.getElementById('emptyState');
+  const countLabel = document.getElementById('countLabel');
+  const searchInput = document.getElementById('searchInput');
+  const overlay = document.getElementById('overlay');
+  const productForm = document.getElementById('productForm');
+  const modalTitle = document.getElementById('modalTitle');
+  const formError = document.getElementById('formError');
+  const photoInput = document.getElementById('photoInput');
+  const photoPreview = document.getElementById('photoPreview');
+  const toast = document.getElementById('toast');
+
+  let products = [];
+  let currentPhotoData = '';
+  let toastTimer;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function formatQ(n){
+    return 'Q' + Number(n).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function emptyPhotoIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+  }
+
+  function render(){
+    const term = searchInput.value.trim().toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+
+    countLabel.textContent = products.length + (products.length === 1 ? ' producto' : ' productos');
+
+    if (filtered.length === 0){
+      grid.style.display = 'none';
+      emptyState.style.display = 'block';
+      emptyState.textContent = products.length === 0
+        ? 'Todavía no hay productos. Agrega el primero con el botón de arriba.'
+        : 'No se encontraron productos con ese nombre.';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    grid.style.display = 'grid';
+
+    grid.innerHTML = filtered.map(p => {
+      const low = Number(p.quantity) <= 3;
+      return `
+        <div class="card" data-id="${p.id}">
+          <div class="card-photo">
+            ${p.photo ? `<img src="${p.photo}" alt="${p.name}">` : emptyPhotoIcon()}
+          </div>
+          <div class="card-body">
+            <div class="card-name">${escapeHtml(p.name)}</div>
+            ${p.description ? `<div class="card-desc">${escapeHtml(p.description)}</div>` : ''}
+            <div class="card-meta">
+              <div class="card-price">${formatQ(p.price)}</div>
+              <div class="card-qty ${low ? 'low' : ''}">${p.quantity} en stock</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="link-btn" data-edit="${p.id}">Editar</button>
+            <button class="btn-danger-text" data-delete="${p.id}">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function loadProducts(){
+    try {
+      const res = await fetch(API);
+      if (!res.ok) throw new Error('Error al cargar');
+      products = await res.json();
+    } catch (err) {
+      console.error(err);
+      products = [];
+      showToast('No se pudo conectar con el catálogo. Revisa la función de Netlify.');
+    }
+    render();
+  }
+
+  // ---------- Modal ----------
+  function openModal(product){
+    formError.style.display = 'none';
+    if (product){
+      modalTitle.textContent = 'Editar producto';
+      document.getElementById('productId').value = product.id;
+      document.getElementById('nameInput').value = product.name;
+      document.getElementById('priceInput').value = product.price;
+      document.getElementById('qtyInput').value = product.quantity;
+      document.getElementById('descInput').value = product.description || '';
+      currentPhotoData = product.photo || '';
+      photoPreview.innerHTML = currentPhotoData
+        ? `<img src="${currentPhotoData}">`
+        : emptyPhotoIcon();
+    } else {
+      modalTitle.textContent = 'Agregar producto';
+      productForm.reset();
+      document.getElementById('productId').value = '';
+      currentPhotoData = '';
+      photoPreview.innerHTML = emptyPhotoIcon();
+    }
+    overlay.classList.add('show');
+  }
+
+  function closeModal(){
+    overlay.classList.remove('show');
+  }
+
+  document.getElementById('btnNew').addEventListener('click', () => openModal(null));
+  document.getElementById('btnCancel').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      currentPhotoData = reader.result;
+      photoPreview.innerHTML = `<img src="${currentPhotoData}">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  productForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById('productId').value;
+    const name = document.getElementById('nameInput').value.trim();
+    const price = document.getElementById('priceInput').value;
+    const quantity = document.getElementById('qtyInput').value;
+    const description = document.getElementById('descInput').value.trim();
+
+    if (!name || price === '' || quantity === ''){
+      formError.style.display = 'block';
+      return;
+    }
+    formError.style.display = 'none';
+
+    const payload = { name, price: Number(price), quantity: Number(quantity), description, photo: currentPhotoData };
+
+    const btnSave = document.getElementById('btnSave');
+    btnSave.disabled = true;
+    btnSave.textContent = 'Guardando...';
+
+    try {
+      let res;
+      if (id){
+        res = await fetch(`${API}?id=${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+      if (!res.ok) throw new Error('Error al guardar');
+      closeModal();
+      showToast(id ? 'Producto actualizado' : 'Producto agregado');
+      await loadProducts();
+    } catch (err) {
+      console.error(err);
+      showToast('No se pudo guardar el producto');
+    } finally {
+      btnSave.disabled = false;
+      btnSave.textContent = 'Guardar producto';
+    }
+  });
+
+  grid.addEventListener('click', async (e) => {
+    const editId = e.target.dataset.edit;
+    const deleteId = e.target.dataset.delete;
+
+    if (editId){
+      const p = products.find(x => x.id === editId);
+      if (p) openModal(p);
+    }
+
+    if (deleteId){
+      const p = products.find(x => x.id === deleteId);
+      if (!p) return;
+      if (!confirm(`¿Eliminar "${p.name}" del catálogo?`)) return;
+      try {
+        const res = await fetch(`${API}?id=${deleteId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Error al eliminar');
+        showToast('Producto eliminado');
+        await loadProducts();
+      } catch (err) {
+        console.error(err);
+        showToast('No se pudo eliminar el producto');
+      }
+    }
+  });
+
+  searchInput.addEventListener('input', render);
+
+  loadProducts();
+</script>
+
+</body>
+</html>
