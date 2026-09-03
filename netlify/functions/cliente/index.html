@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --danger: #b3261e;
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Auth screen ---------- */
+  .auth-wrap{
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+
+  .auth-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 30px 26px;
+    width:100%;
+    max-width: 380px;
+  }
+
+  .auth-brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom: 22px;
+  }
+
+  .brand-mark{
+    width:42px;
+    height:42px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .auth-brand-name{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .auth-title{
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  .auth-sub{
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 20px;
+  }
+
+  .field{ margin-bottom: 14px; }
+
+  .field label{
+    display:block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .field input{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .field input:focus{ outline:none; border-color: var(--navy); }
+
+  .btn{
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 11px 16px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    width:100%;
+  }
+
+  .btn-primary{
+    background: var(--navy);
+    color: var(--white);
+  }
+  .btn-primary:hover{ background: var(--navy-dark); }
+  .btn-primary:disabled{ opacity:.6; cursor:default; }
+
+  .auth-switch{
+    text-align:center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+  }
+
+  .auth-switch button{
+    background:none;
+    border:none;
+    color: var(--navy);
+    font-weight: 600;
+    cursor:pointer;
+    font-size: 13px;
+    font-family: inherit;
+    padding: 0;
+  }
+
+  .form-error{
+    font-size: 12px;
+    color: var(--danger);
+    margin: -6px 0 14px;
+    display:none;
+  }
+
+  /* ---------- App shell ---------- */
+  .app-shell{ display:none; }
+  .app-shell.show{ display:block; }
+  .auth-wrap.hide{ display:none; }
+
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+    z-index: 10;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand-name{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  .points-pill{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    background: var(--navy-soft);
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .avatar-btn{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background: var(--navy-soft);
+    color: var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    border: none;
+    cursor: pointer;
+  }
+
+  main{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px 24px 60px;
+  }
+
+  .search{
+    max-width: 340px;
+    margin-bottom: 20px;
+  }
+
+  .search input{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .search input:focus{ outline: none; border-color: var(--navy); }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .card-photo{
+    width:100%;
+    aspect-ratio: 1 / 1;
+    background: var(--navy-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .card-photo img{ width:100%; height:100%; object-fit: cover; display:block; }
+  .card-photo svg{ width:32px; height:32px; color: var(--navy); opacity:.4; }
+
+  .card-body{
+    padding: 12px 14px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex:1;
+  }
+
+  .card-name{ font-size: 14px; font-weight: 600; }
+
+  .card-desc{
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height:1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:auto;
+    padding-top:10px;
+  }
+
+  .card-price{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .card-qty{
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .card-qty.out{ color: var(--danger); }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ---------- Account panel ---------- */
+  .overlay{
+    display:none;
+    position: fixed;
+    inset:0;
+    background: rgba(13,23,48,0.45);
+    align-items:flex-start;
+    justify-content:flex-end;
+    z-index: 50;
+  }
+  .overlay.show{ display:flex; }
+
+  .panel{
+    background: var(--white);
+    height: 100%;
+    width: 100%;
+    max-width: 340px;
+    padding: 22px;
+    overflow-y: auto;
+  }
+
+  .panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 20px;
+  }
+
+  .panel-title{ font-size: 16px; font-weight: 700; }
+
+  .close-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color: var(--text-muted);
+    padding: 4px;
+  }
+  .close-btn svg{ width:20px; height:20px; }
+
+  .account-row{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .account-row-label{ font-size:11px; color: var(--text-muted); }
+  .account-row-value{ font-size:14px; font-weight:600; }
+
+  .points-box{
+    background: var(--navy-soft);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align:center;
+    margin: 18px 0;
+  }
+  .points-box-value{ font-size: 26px; font-weight:700; color: var(--navy); }
+  .points-box-label{ font-size: 12px; color: var(--text-muted); margin-top:2px; }
+
+  .btn-logout{
+    width:100%;
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--danger);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor:pointer;
+    margin-top: 10px;
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy-dark);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 60;
+    text-align:center;
+    max-width: 90%;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px){
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 16px 48px; }
+    .panel{ max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ---------- Pantalla de acceso ---------- -->
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">GR</div>
+      <div class="auth-brand-name">Grupo Rolmar</div>
+    </div>
+
+    <div id="loginView">
+      <div class="auth-title">Ingresa a tu cuenta</div>
+      <div class="auth-sub">Ve el catálogo y tus puntos.</div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginEmail">Correo</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="field">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <div class="form-error" id="loginError"></div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">Ingresar</button>
+      </form>
+      <div class="auth-switch">¿No tienes cuenta? <button id="showRegister">Regístrate</button></div>
+    </div>
+
+    <div id="registerView" style="display:none;">
+      <div class="auth-title">Crea tu cuenta</div>
+      <div class="auth-sub">Regístrate para ver el catálogo y acumular puntos.</div>
+      <form id="registerForm">
+        <div class="field">
+          <label for="regName">Nombre</label>
+          <input type="text" id="regName" required>
+        </div>
+        <div class="field">
+          <label for="regEmail">Correo</label>
+          <input type="email" id="regEmail" required>
+        </div>
+        <div class="field">
+          <label for="regPassword">Contraseña</label>
+          <input type="password" id="regPassword" required minlength="6">
+        </div>
+        <div class="form-error" id="registerError"></div>
+        <button type="submit" class="btn btn-primary" id="registerBtn">Crear cuenta</button>
+      </form>
+      <div class="auth-switch">¿Ya tienes cuenta? <button id="showLogin">Ingresa</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- App (catálogo) ---------- -->
+<div class="app-shell" id="appShell">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">GR</div>
+      <div class="brand-name">Grupo Rolmar</div>
+    </div>
+    <div class="header-right">
+      <div class="points-pill" id="pointsPill">0 puntos</div>
+      <button class="avatar-btn" id="avatarBtn">·</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="search">
+      <input type="text" id="searchInput" placeholder="Buscar producto...">
+    </div>
+
+    <div id="gridWrap">
+      <div class="empty-state" id="emptyState">Cargando catálogo...</div>
+      <div class="grid" id="grid" style="display:none;"></div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ---------- Panel de cuenta ---------- -->
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Mi cuenta</div>
+      <button class="close-btn" id="closePanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="account-row">
+      <div class="account-row-label">Nombre</div>
+      <div class="account-row-value" id="accName">—</div>
+    </div>
+    <div class="account-row">
+      <div class="account-row-label">Correo</div>
+      <div class="account-row-value" id="accEmail">—</div>
+    </div>
+
+    <div class="points-box">
+      <div class="points-box-value" id="accPoints">0</div>
+      <div class="points-box-label">puntos acumulados</div>
+    </div>
+
+    <button class="btn-logout" id="logoutBtn">Cerrar sesión</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const AUTH_API = '/.netlify/functions/auth';
+  const CATALOG_API = '/.netlify/functions/catalog';
+  const TOKEN_KEY = 'rolmar_client_token';
+
+  let products = [];
+  let currentUser = null;
+  let toastTimer;
+
+  const toast = document.getElementById('toast');
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  function formatQ(n){
+    return 'Q' + Number(n).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function emptyPhotoIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+  }
+
+  // ---------- Vista: login vs registro ----------
+  document.getElementById('showRegister').addEventListener('click', () => {
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('registerView').style.display = 'block';
+  });
+  document.getElementById('showLogin').addEventListener('click', () => {
+    document.getElementById('registerView').style.display = 'none';
+    document.getElementById('loginView').style.display = 'block';
+  });
+
+  // ---------- Login ----------
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errBox = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    errBox.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Ingresando...';
+
+    try {
+      const res = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo ingresar');
+
+      localStorage.setItem(TOKEN_KEY, data.token);
+      currentUser = data.user;
+      enterApp();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Ingresar';
+    }
+  });
+
+  // ---------- Registro ----------
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const errBox = document.getElementById('registerError');
+    const btn = document.getElementById('registerBtn');
+    errBox.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Creando cuenta...';
+
+    try {
+      const res = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'register', name, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo crear la cuenta');
+
+      localStorage.setItem(TOKEN_KEY, data.token);
+      currentUser = data.user;
+      enterApp();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta';
+    }
+  });
+
+  // ---------- Entrar a la app ----------
+  function enterApp(){
+    document.getElementById('authWrap').classList.add('hide');
+    document.getElementById('appShell').classList.add('show');
+    document.getElementById('pointsPill').textContent = (currentUser.points || 0) + ' puntos';
+    document.getElementById('avatarBtn').textContent = currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('accName').textContent = currentUser.name;
+    document.getElementById('accEmail').textContent = currentUser.email;
+    document.getElementById('accPoints').textContent = currentUser.points || 0;
+    loadProducts();
+  }
+
+  function exitApp(){
+    localStorage.removeItem(TOKEN_KEY);
+    currentUser = null;
+    document.getElementById('appShell').classList.remove('show');
+    document.getElementById('authWrap').classList.remove('hide');
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('loginForm').reset();
+  }
+
+  // ---------- Catálogo ----------
+  async function loadProducts(){
+    try {
+      const res = await fetch(CATALOG_API);
+      if (!res.ok) throw new Error();
+      products = await res.json();
+    } catch (err) {
+      products = [];
+      showToast('No se pudo cargar el catálogo');
+    }
+    render();
+  }
+
+  function render(){
+    const term = document.getElementById('searchInput').value.trim().toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+    const grid = document.getElementById('grid');
+    const emptyState = document.getElementById('emptyState');
+
+    if (filtered.length === 0){
+      grid.style.display = 'none';
+      emptyState.style.display = 'block';
+      emptyState.textContent = products.length === 0
+        ? 'Todavía no hay productos en el catálogo.'
+        : 'No se encontraron productos con ese nombre.';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    grid.style.display = 'grid';
+
+    grid.innerHTML = filtered.map(p => {
+      const out = Number(p.quantity) <= 0;
+      return `
+        <div class="card">
+          <div class="card-photo">
+            ${p.photo ? `<img src="${p.photo}" alt="${escapeHtml(p.name)}">` : emptyPhotoIcon()}
+          </div>
+          <div class="card-body">
+            <div class="card-name">${escapeHtml(p.name)}</div>
+            ${p.description ? `<div class="card-desc">${escapeHtml(p.description)}</div>` : ''}
+            <div class="card-meta">
+              <div class="card-price">${formatQ(p.price)}</div>
+              <div class="card-qty ${out ? 'out' : ''}">${out ? 'Agotado' : p.quantity + ' disponibles'}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('searchInput').addEventListener('input', render);
+
+  // ---------- Panel de cuenta ----------
+  document.getElementById('avatarBtn').addEventListener('click', () => {
+    document.getElementById('overlay').classList.add('show');
+  });
+  document.getElementById('closePanel').addEventListener('click', () => {
+    document.getElementById('overlay').classList.remove('show');
+  });
+  document.getElementById('overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'overlay') document.getElementById('overlay').classList.remove('show');
+  });
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    try {
+      await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout', token })
+      });
+    } catch (err) { /* seguimos igual */ }
+    exitApp();
+  });
+
+  // ---------- Verificar sesión guardada al abrir ----------
+  (async function init(){
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token){
+      return;
+    }
+    try {
+      const res = await fetch(`${AUTH_API}?token=${encodeURIComponent(token)}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      currentUser = data.user;
+      enterApp();
+    } catch (err) {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  })();
+</script>
+
+</body>
+  </html>
