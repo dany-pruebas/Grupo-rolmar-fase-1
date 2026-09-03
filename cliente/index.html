@@ -15,6 +15,7 @@
     --text-muted: #6b7280;
     --white: #ffffff;
     --danger: #b3261e;
+    --success: #1a7f37;
     --radius: 10px;
   }
 
@@ -182,7 +183,7 @@
   .header-right{
     display:flex;
     align-items:center;
-    gap:14px;
+    gap:10px;
   }
 
   .points-pill{
@@ -194,7 +195,7 @@
     border-radius: 999px;
   }
 
-  .avatar-btn{
+  .icon-btn{
     width:34px;
     height:34px;
     border-radius:50%;
@@ -207,7 +208,27 @@
     font-weight:700;
     border: none;
     cursor: pointer;
+    position: relative;
   }
+  .icon-btn svg{ width:17px; height:17px; }
+
+  .cart-badge{
+    position:absolute;
+    top:-4px;
+    right:-4px;
+    background: var(--danger);
+    color:#fff;
+    font-size: 10px;
+    font-weight:700;
+    min-width:16px;
+    height:16px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 0 3px;
+  }
+  .cart-badge.hide{ display:none; }
 
   main{
     max-width: 1080px;
@@ -298,6 +319,51 @@
 
   .card-qty.out{ color: var(--danger); }
 
+  .card-add{
+    margin-top: 10px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+  }
+  .card-add:disabled{
+    background: var(--line);
+    color: var(--text-muted);
+    cursor: default;
+  }
+
+  .card-stepper{
+    margin-top: 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .card-stepper button{
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: var(--white);
+    color: var(--navy);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .card-stepper span{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
   .empty-state{
     text-align:center;
     padding: 60px 20px;
@@ -305,7 +371,7 @@
     font-size: 14px;
   }
 
-  /* ---------- Account panel ---------- */
+  /* ---------- Overlays (cuenta / carrito) ---------- */
   .overlay{
     display:none;
     position: fixed;
@@ -324,6 +390,8 @@
     max-width: 340px;
     padding: 22px;
     overflow-y: auto;
+    display:flex;
+    flex-direction:column;
   }
 
   .panel-header{
@@ -376,6 +444,90 @@
     border-radius: 8px;
     cursor:pointer;
     margin-top: 10px;
+  }
+
+  /* ---------- Carrito ---------- */
+  .cart-list{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .cart-item{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .cart-item-photo{
+    width:46px;
+    height:46px;
+    border-radius:8px;
+    background: var(--navy-soft);
+    flex-shrink:0;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cart-item-photo img{ width:100%; height:100%; object-fit:cover; }
+  .cart-item-photo svg{ width:18px; height:18px; color:var(--navy); opacity:.4; }
+
+  .cart-item-info{ flex:1; min-width:0; }
+  .cart-item-name{ font-size:13px; font-weight:600; }
+  .cart-item-price{ font-size:12px; color: var(--text-muted); }
+
+  .cart-item-stepper{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .cart-item-stepper button{
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: none;
+    background: var(--white);
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .cart-item-stepper span{ font-size:12px; font-weight:700; color:var(--navy); min-width:14px; text-align:center; }
+
+  .cart-empty{
+    text-align:center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 40px 10px;
+  }
+
+  .cart-summary{
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+  .cart-summary-row{
+    display:flex;
+    justify-content:space-between;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .cart-summary-row.total{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .cart-summary-points{
+    font-size: 11px;
+    color: var(--success);
+    margin-bottom: 12px;
   }
 
   .toast{
@@ -466,7 +618,11 @@
     </div>
     <div class="header-right">
       <div class="points-pill" id="pointsPill">0 puntos</div>
-      <button class="avatar-btn" id="avatarBtn">·</button>
+      <button class="icon-btn" id="cartBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-badge hide" id="cartBadge">0</span>
+      </button>
+      <button class="icon-btn" id="avatarBtn">·</button>
     </div>
   </header>
 
@@ -511,15 +667,43 @@
   </div>
 </div>
 
+<!-- ---------- Panel de carrito ---------- -->
+<div class="overlay" id="cartOverlay">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Mi carrito</div>
+      <button class="close-btn" id="closeCart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="cart-list" id="cartList">
+      <div class="cart-empty">Tu carrito está vacío.</div>
+    </div>
+
+    <div class="cart-summary" id="cartSummary" style="display:none;">
+      <div class="cart-summary-row total">
+        <span>Total</span>
+        <span id="cartTotal">Q0.00</span>
+      </div>
+      <div class="cart-summary-points" id="cartPoints">Ganas 0 puntos con esta compra</div>
+      <div class="form-error" id="cartError"></div>
+      <button class="btn btn-primary" id="checkoutBtn">Confirmar pedido</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
   const AUTH_API = '/.netlify/functions/auth';
   const CATALOG_API = '/.netlify/functions/catalog';
+  const ORDERS_API = '/.netlify/functions/orders';
   const TOKEN_KEY = 'rolmar_client_token';
 
   let products = [];
   let currentUser = null;
+  let cart = {}; // { productId: qty }
   let toastTimer;
 
   const toast = document.getElementById('toast');
@@ -623,20 +807,26 @@
   function enterApp(){
     document.getElementById('authWrap').classList.add('hide');
     document.getElementById('appShell').classList.add('show');
-    document.getElementById('pointsPill').textContent = (currentUser.points || 0) + ' puntos';
+    updatePointsUI();
     document.getElementById('avatarBtn').textContent = currentUser.name.charAt(0).toUpperCase();
     document.getElementById('accName').textContent = currentUser.name;
     document.getElementById('accEmail').textContent = currentUser.email;
-    document.getElementById('accPoints').textContent = currentUser.points || 0;
     loadProducts();
+  }
+
+  function updatePointsUI(){
+    document.getElementById('pointsPill').textContent = (currentUser.points || 0) + ' puntos';
+    document.getElementById('accPoints').textContent = currentUser.points || 0;
   }
 
   function exitApp(){
     localStorage.removeItem(TOKEN_KEY);
     currentUser = null;
+    cart = {};
     document.getElementById('appShell').classList.remove('show');
     document.getElementById('authWrap').classList.remove('hide');
     document.getElementById('overlay').classList.remove('show');
+    document.getElementById('cartOverlay').classList.remove('show');
     document.getElementById('loginForm').reset();
   }
 
@@ -673,6 +863,21 @@
 
     grid.innerHTML = filtered.map(p => {
       const out = Number(p.quantity) <= 0;
+      const inCart = cart[p.id] || 0;
+      let controlHtml;
+      if (out) {
+        controlHtml = `<button class="card-add" disabled>Agotado</button>`;
+      } else if (inCart > 0) {
+        controlHtml = `
+          <div class="card-stepper">
+            <button data-action="dec" data-id="${p.id}">−</button>
+            <span>${inCart}</span>
+            <button data-action="inc" data-id="${p.id}">+</button>
+          </div>`;
+      } else {
+        controlHtml = `<button class="card-add" data-action="inc" data-id="${p.id}">Agregar</button>`;
+      }
+
       return `
         <div class="card">
           <div class="card-photo">
@@ -685,6 +890,7 @@
               <div class="card-price">${formatQ(p.price)}</div>
               <div class="card-qty ${out ? 'out' : ''}">${out ? 'Agotado' : p.quantity + ' disponibles'}</div>
             </div>
+            ${controlHtml}
           </div>
         </div>
       `;
@@ -692,6 +898,152 @@
   }
 
   document.getElementById('searchInput').addEventListener('input', render);
+
+  document.getElementById('grid').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const current = cart[id] || 0;
+    if (action === 'inc') {
+      if (current >= Number(product.quantity)) {
+        showToast('No hay más stock disponible');
+        return;
+      }
+      cart[id] = current + 1;
+    } else if (action === 'dec') {
+      cart[id] = Math.max(0, current - 1);
+      if (cart[id] === 0) delete cart[id];
+    }
+    render();
+    renderCartBadge();
+  });
+
+  // ---------- Carrito: badge ----------
+  function renderCartBadge(){
+    const count = Object.values(cart).reduce((sum, q) => sum + q, 0);
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = count;
+    badge.classList.toggle('hide', count === 0);
+  }
+
+  // ---------- Carrito: panel ----------
+  function renderCartPanel(){
+    const list = document.getElementById('cartList');
+    const summary = document.getElementById('cartSummary');
+    const ids = Object.keys(cart);
+
+    if (ids.length === 0) {
+      list.innerHTML = '<div class="cart-empty">Tu carrito está vacío.</div>';
+      summary.style.display = 'none';
+      return;
+    }
+
+    let total = 0;
+    list.innerHTML = ids.map(id => {
+      const product = products.find(p => p.id === id);
+      if (!product) return '';
+      const qty = cart[id];
+      total += Number(product.price) * qty;
+      return `
+        <div class="cart-item">
+          <div class="cart-item-photo">
+            ${product.photo ? `<img src="${product.photo}" alt="${escapeHtml(product.name)}">` : emptyPhotoIcon()}
+          </div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${escapeHtml(product.name)}</div>
+            <div class="cart-item-price">${formatQ(product.price)} c/u</div>
+          </div>
+          <div class="cart-item-stepper">
+            <button data-action="dec" data-id="${id}">−</button>
+            <span>${qty}</span>
+            <button data-action="inc" data-id="${id}">+</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    summary.style.display = 'block';
+    document.getElementById('cartTotal').textContent = formatQ(total);
+    document.getElementById('cartPoints').textContent = `Ganas ${Math.floor(total)} puntos con esta compra`;
+    document.getElementById('cartError').style.display = 'none';
+  }
+
+  document.getElementById('cartList').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const current = cart[id] || 0;
+    if (action === 'inc') {
+      if (current >= Number(product.quantity)) {
+        showToast('No hay más stock disponible');
+        return;
+      }
+      cart[id] = current + 1;
+    } else if (action === 'dec') {
+      cart[id] = Math.max(0, current - 1);
+      if (cart[id] === 0) delete cart[id];
+    }
+    renderCartPanel();
+    renderCartBadge();
+    render();
+  });
+
+  document.getElementById('cartBtn').addEventListener('click', () => {
+    renderCartPanel();
+    document.getElementById('cartOverlay').classList.add('show');
+  });
+  document.getElementById('closeCart').addEventListener('click', () => {
+    document.getElementById('cartOverlay').classList.remove('show');
+  });
+  document.getElementById('cartOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'cartOverlay') document.getElementById('cartOverlay').classList.remove('show');
+  });
+
+  // ---------- Confirmar pedido ----------
+  document.getElementById('checkoutBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('checkoutBtn');
+    const errBox = document.getElementById('cartError');
+    errBox.style.display = 'none';
+
+    const items = Object.keys(cart).map(id => ({ productId: id, quantity: cart[id] }));
+    if (items.length === 0) return;
+
+    const token = localStorage.getItem(TOKEN_KEY);
+    btn.disabled = true;
+    btn.textContent = 'Enviando pedido...';
+
+    try {
+      const res = await fetch(ORDERS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, items })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo enviar el pedido');
+
+      currentUser.points = data.points;
+      updatePointsUI();
+      cart = {};
+      renderCartBadge();
+      document.getElementById('cartOverlay').classList.remove('show');
+      showToast('¡Pedido enviado! Ganaste ' + data.order.pointsEarned + ' puntos');
+      await loadProducts();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Confirmar pedido';
+    }
+  });
 
   // ---------- Panel de cuenta ----------
   document.getElementById('avatarBtn').addEventListener('click', () => {
