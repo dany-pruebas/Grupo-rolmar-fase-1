@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#16234f">
+<link rel="manifest" href="./manifest.json">
+<title>Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --danger: #b3261e;
+    --success: #1a7f37;
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Auth screen ---------- */
+  .auth-wrap{
+    min-height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+  }
+
+  .auth-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 30px 26px;
+    width:100%;
+    max-width: 380px;
+  }
+
+  .auth-brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom: 22px;
+  }
+
+  .brand-mark{
+    width:42px;
+    height:42px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .auth-brand-name{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .auth-title{
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  .auth-sub{
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 20px;
+  }
+
+  .field{ margin-bottom: 14px; }
+
+  .field label{
+    display:block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .field input{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .field input:focus{ outline:none; border-color: var(--navy); }
+
+  .field-hint{
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .btn{
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 11px 16px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    width:100%;
+  }
+
+  .btn-primary{
+    background: var(--navy);
+    color: var(--white);
+  }
+  .btn-primary:hover{ background: var(--navy-dark); }
+  .btn-primary:disabled{ opacity:.6; cursor:default; }
+
+  .btn-secondary{
+    background: var(--white);
+    color: var(--navy);
+    border: 1px solid var(--line);
+  }
+  .btn-secondary:disabled{ opacity:.6; cursor:default; }
+
+  .auth-switch{
+    text-align:center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+  }
+
+  .auth-switch button{
+    background:none;
+    border:none;
+    color: var(--navy);
+    font-weight: 600;
+    cursor:pointer;
+    font-size: 13px;
+    font-family: inherit;
+    padding: 0;
+  }
+
+  .form-error{
+    font-size: 12px;
+    color: var(--danger);
+    margin: -6px 0 14px;
+    display:none;
+  }
+
+  /* ---------- App shell ---------- */
+  .app-shell{ display:none; }
+  .app-shell.show{ display:block; }
+  .auth-wrap.hide{ display:none; }
+
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+    z-index: 10;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand-name{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .points-pill{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    background: var(--navy-soft);
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+
+  .icon-btn{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background: var(--navy-soft);
+    color: var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    border: none;
+    cursor: pointer;
+    position: relative;
+  }
+  .icon-btn svg{ width:17px; height:17px; }
+
+  .cart-badge{
+    position:absolute;
+    top:-4px;
+    right:-4px;
+    background: var(--danger);
+    color:#fff;
+    font-size: 10px;
+    font-weight:700;
+    min-width:16px;
+    height:16px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 0 3px;
+  }
+  .cart-badge.hide{ display:none; }
+
+  main{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 24px 24px 60px;
+  }
+
+  .search{
+    max-width: 340px;
+    margin-bottom: 20px;
+  }
+
+  .search input{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .search input:focus{ outline: none; border-color: var(--navy); }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .card-photo{
+    width:100%;
+    aspect-ratio: 1 / 1;
+    background: var(--navy-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .card-photo img{ width:100%; height:100%; object-fit: cover; display:block; }
+  .card-photo svg{ width:32px; height:32px; color: var(--navy); opacity:.4; }
+
+  .card-body{
+    padding: 12px 14px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex:1;
+  }
+
+  .card-name{ font-size: 14px; font-weight: 600; }
+
+  .card-desc{
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height:1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:auto;
+    padding-top:10px;
+  }
+
+  .card-price{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .card-qty{
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .card-qty.out{ color: var(--danger); }
+
+  .card-add{
+    margin-top: 10px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+  }
+  .card-add:disabled{
+    background: var(--line);
+    color: var(--text-muted);
+    cursor: default;
+  }
+
+  .card-stepper{
+    margin-top: 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .card-stepper button{
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: var(--white);
+    color: var(--navy);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .card-stepper span{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ---------- Overlays (cuenta / carrito / dirección / pedidos) ---------- */
+  .overlay{
+    display:none;
+    position: fixed;
+    inset:0;
+    background: rgba(13,23,48,0.45);
+    align-items:flex-start;
+    justify-content:flex-end;
+    z-index: 50;
+  }
+  .overlay.show{ display:flex; }
+
+  .panel{
+    background: var(--white);
+    height: 100%;
+    width: 100%;
+    max-width: 340px;
+    padding: 22px;
+    overflow-y: auto;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 20px;
+  }
+
+  .panel-title{ font-size: 16px; font-weight: 700; }
+
+  .panel-sub{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: -14px 0 18px;
+  }
+
+  .close-btn{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color: var(--text-muted);
+    padding: 4px;
+  }
+  .close-btn svg{ width:20px; height:20px; }
+
+  .account-row{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .account-row-label{ font-size:11px; color: var(--text-muted); }
+  .account-row-value{ font-size:14px; font-weight:600; }
+
+  .points-box{
+    background: var(--navy-soft);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align:center;
+    margin: 18px 0;
+  }
+  .points-box-value{ font-size: 26px; font-weight:700; color: var(--navy); }
+  .points-box-label{ font-size: 12px; color: var(--text-muted); margin-top:2px; }
+
+  .push-box{
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-top: 6px;
+  }
+  .push-box-title{ font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .push-box-desc{ font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height:1.4; }
+  .push-status{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--success);
+    display:none;
+    align-items:center;
+    gap:6px;
+    cursor: pointer;
+  }
+  .push-status.show{ display:flex; }
+  .push-status svg{ width:14px; height:14px; }
+
+  .btn-logout{
+    width:100%;
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--danger);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor:pointer;
+    margin-top: 16px;
+  }
+
+  /* ---------- Carrito ---------- */
+  .cart-list{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .cart-item{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+
+  .cart-item-photo{
+    width:46px;
+    height:46px;
+    border-radius:8px;
+    background: var(--navy-soft);
+    flex-shrink:0;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cart-item-photo img{ width:100%; height:100%; object-fit:cover; }
+  .cart-item-photo svg{ width:18px; height:18px; color:var(--navy); opacity:.4; }
+
+  .cart-item-info{ flex:1; min-width:0; }
+  .cart-item-name{ font-size:13px; font-weight:600; }
+  .cart-item-price{ font-size:12px; color: var(--text-muted); }
+
+  .cart-item-stepper{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .cart-item-stepper button{
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: none;
+    background: var(--white);
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .cart-item-stepper span{ font-size:12px; font-weight:700; color:var(--navy); min-width:14px; text-align:center; }
+
+  .cart-empty{
+    text-align:center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 40px 10px;
+  }
+
+  .cart-summary{
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+  .cart-summary-row{
+    display:flex;
+    justify-content:space-between;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .cart-summary-row.total{
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .cart-summary-points{
+    font-size: 11px;
+    color: var(--success);
+    margin-bottom: 12px;
+  }
+
+  /* ---------- Dirección ---------- */
+  .address-note{
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  /* ---------- Mis pedidos ---------- */
+  .orders-list{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  .order-empty{
+    text-align:center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 40px 10px;
+  }
+
+  .order-card{
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+  }
+
+  .order-card-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    margin-bottom: 10px;
+  }
+
+  .order-id{ font-size: 12px; color: var(--text-muted); }
+  .order-date{ font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .order-total{ font-size: 14px; font-weight: 700; color: var(--navy); }
+
+  .order-items{
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .progress-track{
+    display:flex;
+    align-items:flex-start;
+    margin-bottom: 4px;
+  }
+
+  .progress-step{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position: relative;
+  }
+
+  .progress-dot{
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background: var(--line);
+    border: 2px solid var(--line);
+    z-index:1;
+  }
+  .progress-step.done .progress-dot{
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+  .progress-step.current .progress-dot{
+    background: var(--white);
+    border-color: var(--navy);
+  }
+
+  .progress-line{
+    position:absolute;
+    top:7px;
+    left:-50%;
+    width:100%;
+    height:2px;
+    background: var(--line);
+    z-index:0;
+  }
+  .progress-step:first-child .progress-line{ display:none; }
+  .progress-step.done .progress-line,
+  .progress-step.current .progress-line{ background: var(--navy); }
+
+  .progress-label{
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-align:center;
+  }
+  .progress-step.done .progress-label,
+  .progress-step.current .progress-label{
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .order-cancelled{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--danger);
+    background: #fbeceb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: center;
+  }
+
+  .order-tracking{
+    margin-top: 12px;
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--navy-dark);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 60;
+    text-align:center;
+    max-width: 90%;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px){
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 16px 48px; }
+    .panel{ max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ---------- Pantalla de acceso ---------- -->
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">GR</div>
+      <div class="auth-brand-name">Grupo Rolmar</div>
+    </div>
+
+    <div id="loginView">
+      <div class="auth-title">Ingresa a tu cuenta</div>
+      <div class="auth-sub">Ve el catálogo y tus puntos.</div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginEmail">Correo</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="field">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <div class="form-error" id="loginError"></div>
+        <button type="submit" class="btn btn-primary" id="loginBtn">Ingresar</button>
+      </form>
+      <div class="auth-switch">¿No tienes cuenta? <button id="showRegister">Regístrate</button></div>
+    </div>
+
+    <div id="registerView" style="display:none;">
+      <div class="auth-title">Crea tu cuenta</div>
+      <div class="auth-sub">Regístrate para ver el catálogo y acumular puntos.</div>
+      <form id="registerForm">
+        <div class="field">
+          <label for="regName">Nombre</label>
+          <input type="text" id="regName" required>
+        </div>
+        <div class="field">
+          <label for="regEmail">Correo</label>
+          <input type="email" id="regEmail" required>
+        </div>
+        <div class="field">
+          <label for="regPassword">Contraseña</label>
+          <input type="password" id="regPassword" required minlength="6">
+        </div>
+        <div class="form-error" id="registerError"></div>
+        <button type="submit" class="btn btn-primary" id="registerBtn">Crear cuenta</button>
+      </form>
+      <div class="auth-switch">¿Ya tienes cuenta? <button id="showLogin">Ingresa</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- App (catálogo) ---------- -->
+<div class="app-shell" id="appShell">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">GR</div>
+      <div class="brand-name">Grupo Rolmar</div>
+    </div>
+    <div class="header-right">
+      <div class="points-pill" id="pointsPill">0 puntos</div>
+      <button class="icon-btn" id="ordersBtn" title="Mis pedidos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M16 3v6M8 3v6M3 11h18"/></svg>
+      </button>
+      <button class="icon-btn" id="cartBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-badge hide" id="cartBadge">0</span>
+      </button>
+      <button class="icon-btn" id="avatarBtn">·</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="search">
+      <input type="text" id="searchInput" placeholder="Buscar producto...">
+    </div>
+
+    <div id="gridWrap">
+      <div class="empty-state" id="emptyState">Cargando catálogo...</div>
+      <div class="grid" id="grid" style="display:none;"></div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ---------- Panel de cuenta ---------- -->
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Mi cuenta</div>
+      <button class="close-btn" id="closePanel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="account-row">
+      <div class="account-row-label">Nombre</div>
+      <div class="account-row-value" id="accName">—</div>
+    </div>
+    <div class="account-row">
+      <div class="account-row-label">Correo</div>
+      <div class="account-row-value" id="accEmail">—</div>
+    </div>
+
+    <div class="points-box">
+      <div class="points-box-value" id="accPoints">0</div>
+      <div class="points-box-label">puntos acumulados</div>
+    </div>
+
+    <div class="push-box">
+      <div class="push-box-title">Notificaciones</div>
+      <div class="push-box-desc" id="pushDesc">Actívalas para que te avisemos cuando tu pedido cambie de estado.</div>
+      <button class="btn btn-secondary" id="pushBtn">Activar notificaciones</button>
+      <div class="push-status" id="pushStatus" title="Toca para desactivar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        <span>Notificaciones activadas</span>
+      </div>
+    </div>
+
+    <button class="btn-logout" id="logoutBtn">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- ---------- Panel de carrito ---------- -->
+<div class="overlay" id="cartOverlay">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Mi carrito</div>
+      <button class="close-btn" id="closeCart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="cart-list" id="cartList">
+      <div class="cart-empty">Tu carrito está vacío.</div>
+    </div>
+
+    <div class="cart-summary" id="cartSummary" style="display:none;">
+      <div class="cart-summary-row total">
+        <span>Total</span>
+        <span id="cartTotal">Q0.00</span>
+      </div>
+      <div class="cart-summary-points" id="cartPoints">Ganas 0 puntos con esta compra</div>
+      <button class="btn btn-primary" id="checkoutBtn">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Panel de dirección de entrega ---------- -->
+<div class="overlay" id="addressOverlay">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Datos de entrega</div>
+      <button class="close-btn" id="closeAddress">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="address-note">Completa estos datos para que podamos entregar tu pedido.</div>
+    <form id="addressForm">
+      <div class="field">
+        <label for="addrName">Nombre de quien recibe</label>
+        <input type="text" id="addrName" required>
+      </div>
+      <div class="field">
+        <label for="addrPhone">Teléfono</label>
+        <input type="tel" id="addrPhone" required>
+      </div>
+      <div class="field">
+        <label for="addrAddress">Dirección</label>
+        <input type="text" id="addrAddress" required>
+      </div>
+      <div class="field">
+        <label for="addrCity">Ciudad / municipio</label>
+        <input type="text" id="addrCity" required>
+      </div>
+      <div class="field">
+        <label for="addrReference">Referencia (opcional)</label>
+        <input type="text" id="addrReference" placeholder="Ej. casa color blanco, portón negro">
+      </div>
+      <div class="form-error" id="addressError"></div>
+      <button type="submit" class="btn btn-primary" id="addressSubmitBtn">Confirmar pedido</button>
+    </form>
+  </div>
+</div>
+
+<!-- ---------- Panel de mis pedidos ---------- -->
+<div class="overlay" id="ordersOverlay">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Mis pedidos</div>
+      <button class="close-btn" id="closeOrders">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="orders-list" id="ordersList">
+      <div class="order-empty">Cargando tus pedidos...</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const AUTH_API = '/.netlify/functions/auth';
+  const CATALOG_API = '/.netlify/functions/catalog';
+  const ORDERS_API = '/.netlify/functions/orders';
+  const PUSH_SUBSCRIBE_API = '/.netlify/functions/push-subscribe';
+  const TOKEN_KEY = 'rolmar_client_token';
+  const ADDRESS_KEY = 'rolmar_client_address';
+
+  const VAPID_PUBLIC_KEY = 'BPh1GRkaGLyrsTJAOnj5QlVjfJ3y_BvbT-i59MBW4z0DRqxT0acQ6JElzo24EJkyxO72792TM632OM5qhcSZDUY';
+
+  // Debe coincidir exactamente con las claves de status que usa orders.mjs
+  const STATUS_STEPS = [
+    { key: 'pendiente', label: 'Pendiente' },
+    { key: 'preparando', label: 'Preparando' },
+    { key: 'enviado', label: 'Enviado' },
+    { key: 'completado', label: 'Completado' }
+  ];
+
+  let products = [];
+  let currentUser = null;
+  let cart = {}; // { productId: qty }
+  let toastTimer;
+
+  const toast = document.getElementById('toast');
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  function formatQ(n){
+    return 'Q' + Number(n).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatDate(iso){
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch (e) { return ''; }
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function emptyPhotoIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+  }
+
+  // ---------- Vista: login vs registro ----------
+  document.getElementById('showRegister').addEventListener('click', () => {
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('registerView').style.display = 'block';
+  });
+  document.getElementById('showLogin').addEventListener('click', () => {
+    document.getElementById('registerView').style.display = 'none';
+    document.getElementById('loginView').style.display = 'block';
+  });
+
+  // ---------- Login ----------
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errBox = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    errBox.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Ingresando...';
+
+    try {
+      const res = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo ingresar');
+
+      localStorage.setItem(TOKEN_KEY, data.token);
+      currentUser = data.user;
+      enterApp();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Ingresar';
+    }
+  });
+
+  // ---------- Registro ----------
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const errBox = document.getElementById('registerError');
+    const btn = document.getElementById('registerBtn');
+    errBox.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Creando cuenta...';
+
+    try {
+      const res = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'register', name, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo crear la cuenta');
+
+      localStorage.setItem(TOKEN_KEY, data.token);
+      currentUser = data.user;
+      enterApp();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta';
+    }
+  });
+
+  // ---------- Entrar a la app ----------
+  function enterApp(){
+    document.getElementById('authWrap').classList.add('hide');
+    document.getElementById('appShell').classList.add('show');
+    updatePointsUI();
+    document.getElementById('avatarBtn').textContent = currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('accName').textContent = currentUser.name;
+    document.getElementById('accEmail').textContent = currentUser.email;
+    loadProducts();
+    registerServiceWorker();
+    checkPushStatus();
+  }
+
+  function updatePointsUI(){
+    document.getElementById('pointsPill').textContent = (currentUser.points || 0) + ' puntos';
+    document.getElementById('accPoints').textContent = currentUser.points || 0;
+  }
+
+  function exitApp(){
+    localStorage.removeItem(TOKEN_KEY);
+    currentUser = null;
+    cart = {};
+    document.getElementById('appShell').classList.remove('show');
+    document.getElementById('authWrap').classList.remove('hide');
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('cartOverlay').classList.remove('show');
+    document.getElementById('addressOverlay').classList.remove('show');
+    document.getElementById('ordersOverlay').classList.remove('show');
+    document.getElementById('loginForm').reset();
+  }
+
+  // ---------- Catálogo ----------
+  async function loadProducts(){
+    try {
+      const res = await fetch(CATALOG_API);
+      if (!res.ok) throw new Error();
+      products = await res.json();
+    } catch (err) {
+      products = [];
+      showToast('No se pudo cargar el catálogo');
+    }
+    render();
+  }
+
+  function render(){
+    const term = document.getElementById('searchInput').value.trim().toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+    const grid = document.getElementById('grid');
+    const emptyState = document.getElementById('emptyState');
+
+    if (filtered.length === 0){
+      grid.style.display = 'none';
+      emptyState.style.display = 'block';
+      emptyState.textContent = products.length === 0
+        ? 'Todavía no hay productos en el catálogo.'
+        : 'No se encontraron productos con ese nombre.';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    grid.style.display = 'grid';
+
+    grid.innerHTML = filtered.map(p => {
+      const out = Number(p.quantity) <= 0;
+      const inCart = cart[p.id] || 0;
+      let controlHtml;
+      if (out) {
+        controlHtml = `<button class="card-add" disabled>Agotado</button>`;
+      } else if (inCart > 0) {
+        controlHtml = `
+          <div class="card-stepper">
+            <button data-action="dec" data-id="${p.id}">−</button>
+            <span>${inCart}</span>
+            <button data-action="inc" data-id="${p.id}">+</button>
+          </div>`;
+      } else {
+        controlHtml = `<button class="card-add" data-action="inc" data-id="${p.id}">Agregar</button>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="card-photo">
+            ${p.photo ? `<img src="${p.photo}" alt="${escapeHtml(p.name)}">` : emptyPhotoIcon()}
+          </div>
+          <div class="card-body">
+            <div class="card-name">${escapeHtml(p.name)}</div>
+            ${p.description ? `<div class="card-desc">${escapeHtml(p.description)}</div>` : ''}
+            <div class="card-meta">
+              <div class="card-price">${formatQ(p.price)}</div>
+              <div class="card-qty ${out ? 'out' : ''}">${out ? 'Agotado' : p.quantity + ' disponibles'}</div>
+            </div>
+            ${controlHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('searchInput').addEventListener('input', render);
+
+  document.getElementById('grid').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const current = cart[id] || 0;
+    if (action === 'inc') {
+      if (current >= Number(product.quantity)) {
+        showToast('No hay más stock disponible');
+        return;
+      }
+      cart[id] = current + 1;
+    } else if (action === 'dec') {
+      cart[id] = Math.max(0, current - 1);
+      if (cart[id] === 0) delete cart[id];
+    }
+    render();
+    renderCartBadge();
+  });
+
+  // ---------- Carrito: badge ----------
+  function renderCartBadge(){
+    const count = Object.values(cart).reduce((sum, q) => sum + q, 0);
+    const badge = document.getElementById('cartBadge');
+    badge.textContent = count;
+    badge.classList.toggle('hide', count === 0);
+  }
+
+  // ---------- Carrito: panel ----------
+  function renderCartPanel(){
+    const list = document.getElementById('cartList');
+    const summary = document.getElementById('cartSummary');
+    const ids = Object.keys(cart);
+
+    if (ids.length === 0) {
+      list.innerHTML = '<div class="cart-empty">Tu carrito está vacío.</div>';
+      summary.style.display = 'none';
+      return;
+    }
+
+    let total = 0;
+    list.innerHTML = ids.map(id => {
+      const product = products.find(p => p.id === id);
+      if (!product) return '';
+      const qty = cart[id];
+      total += Number(product.price) * qty;
+      return `
+        <div class="cart-item">
+          <div class="cart-item-photo">
+            ${product.photo ? `<img src="${product.photo}" alt="${escapeHtml(product.name)}">` : emptyPhotoIcon()}
+          </div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${escapeHtml(product.name)}</div>
+            <div class="cart-item-price">${formatQ(product.price)} c/u</div>
+          </div>
+          <div class="cart-item-stepper">
+            <button data-action="dec" data-id="${id}">−</button>
+            <span>${qty}</span>
+            <button data-action="inc" data-id="${id}">+</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    summary.style.display = 'block';
+    document.getElementById('cartTotal').textContent = formatQ(total);
+    document.getElementById('cartPoints').textContent = `Ganas ${Math.floor(total)} puntos con esta compra`;
+  }
+
+  document.getElementById('cartList').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.action;
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const current = cart[id] || 0;
+    if (action === 'inc') {
+      if (current >= Number(product.quantity)) {
+        showToast('No hay más stock disponible');
+        return;
+      }
+      cart[id] = current + 1;
+    } else if (action === 'dec') {
+      cart[id] = Math.max(0, current - 1);
+      if (cart[id] === 0) delete cart[id];
+    }
+    renderCartPanel();
+    renderCartBadge();
+    render();
+  });
+
+  document.getElementById('cartBtn').addEventListener('click', () => {
+    renderCartPanel();
+    document.getElementById('cartOverlay').classList.add('show');
+  });
+  document.getElementById('closeCart').addEventListener('click', () => {
+    document.getElementById('cartOverlay').classList.remove('show');
+  });
+  document.getElementById('cartOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'cartOverlay') document.getElementById('cartOverlay').classList.remove('show');
+  });
+
+  // ---------- Paso 1: carrito -> pedir dirección ----------
+  document.getElementById('checkoutBtn').addEventListener('click', () => {
+    if (Object.keys(cart).length === 0) return;
+    document.getElementById('cartOverlay').classList.remove('show');
+    openAddressForm();
+  });
+
+  function openAddressForm(){
+    const saved = JSON.parse(localStorage.getItem(ADDRESS_KEY) || 'null');
+    if (saved) {
+      document.getElementById('addrName').value = saved.fullName || '';
+      document.getElementById('addrPhone').value = saved.phone || '';
+      document.getElementById('addrAddress').value = saved.line1 || '';
+      document.getElementById('addrCity').value = saved.city || '';
+      document.getElementById('addrReference').value = saved.reference || '';
+    }
+    document.getElementById('addressError').style.display = 'none';
+    document.getElementById('addressOverlay').classList.add('show');
+  }
+
+  document.getElementById('closeAddress').addEventListener('click', () => {
+    document.getElementById('addressOverlay').classList.remove('show');
+  });
+  document.getElementById('addressOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'addressOverlay') document.getElementById('addressOverlay').classList.remove('show');
+  });
+
+  // ---------- Paso 2: confirmar dirección -> enviar pedido ----------
+  document.getElementById('addressForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errBox = document.getElementById('addressError');
+    const btn = document.getElementById('addressSubmitBtn');
+    errBox.style.display = 'none';
+
+    const address = {
+      fullName: document.getElementById('addrName').value.trim(),
+      phone: document.getElementById('addrPhone').value.trim(),
+      line1: document.getElementById('addrAddress').value.trim(),
+      city: document.getElementById('addrCity').value.trim(),
+      reference: document.getElementById('addrReference').value.trim()
+    };
+
+    const items = Object.keys(cart).map(id => ({ productId: id, quantity: cart[id] }));
+    if (items.length === 0) {
+      document.getElementById('addressOverlay').classList.remove('show');
+      return;
+    }
+
+    const token = localStorage.getItem(TOKEN_KEY);
+    btn.disabled = true;
+    btn.textContent = 'Enviando pedido...';
+
+    try {
+      const res = await fetch(ORDERS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, items, address })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo enviar el pedido');
+
+      localStorage.setItem(ADDRESS_KEY, JSON.stringify(address));
+      currentUser.points = data.points;
+      updatePointsUI();
+      cart = {};
+      renderCartBadge();
+      document.getElementById('addressOverlay').classList.remove('show');
+      showToast('¡Pedido enviado! Ganaste ' + data.order.pointsEarned + ' puntos');
+      await loadProducts();
+    } catch (err) {
+      errBox.textContent = err.message;
+      errBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Confirmar pedido';
+    }
+  });
+
+  // ---------- Mis pedidos ----------
+  document.getElementById('ordersBtn').addEventListener('click', () => {
+    document.getElementById('ordersOverlay').classList.add('show');
+    loadOrders();
+  });
+  document.getElementById('closeOrders').addEventListener('click', () => {
+    document.getElementById('ordersOverlay').classList.remove('show');
+  });
+  document.getElementById('ordersOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'ordersOverlay') document.getElementById('ordersOverlay').classList.remove('show');
+  });
+
+  async function loadOrders(){
+    const list = document.getElementById('ordersList');
+    list.innerHTML = '<div class="order-empty">Cargando tus pedidos...</div>';
+    const token = localStorage.getItem(TOKEN_KEY);
+    try {
+      const res = await fetch(`${ORDERS_API}?token=${encodeURIComponent(token)}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const orders = Array.isArray(data) ? data : (data.orders || []);
+      renderOrders(orders);
+    } catch (err) {
+      list.innerHTML = '<div class="order-empty">No se pudieron cargar tus pedidos.</div>';
+    }
+  }
+
+  function renderOrders(orders){
+    const list = document.getElementById('ordersList');
+    if (!orders || orders.length === 0){
+      list.innerHTML = '<div class="order-empty">Todavía no tienes pedidos.</div>';
+      return;
+    }
+
+    const sorted = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    list.innerHTML = sorted.map(order => {
+      const itemsSummary = (order.items || []).map(it => `${it.quantity}x ${escapeHtml(it.name || it.productId)}`).join(', ');
+      const isCancelled = order.status === 'cancelado';
+
+      let progressHtml;
+      if (isCancelled) {
+        progressHtml = `<div class="order-cancelled">Pedido cancelado</div>`;
+      } else {
+        const statusIndex = Math.max(0, STATUS_STEPS.findIndex(s => s.key === order.status));
+        const stepsHtml = STATUS_STEPS.map((step, i) => {
+          let cls = '';
+          if (i < statusIndex) cls = 'done';
+          else if (i === statusIndex) cls = 'current';
+          return `
+            <div class="progress-step ${cls}">
+              <div class="progress-line"></div>
+              <div class="progress-dot"></div>
+              <div class="progress-label">${step.label}</div>
+            </div>`;
+        }).join('');
+        progressHtml = `<div class="progress-track">${stepsHtml}</div>`;
+      }
+
+      return `
+        <div class="order-card">
+          <div class="order-card-top">
+            <div>
+              <div class="order-id">Pedido #${escapeHtml(String(order.id || '').slice(-6))}</div>
+              <div class="order-date">${formatDate(order.createdAt)}</div>
+            </div>
+            <div class="order-total">${formatQ(order.total)}</div>
+          </div>
+          ${itemsSummary ? `<div class="order-items">${itemsSummary}</div>` : ''}
+          ${progressHtml}
+          ${order.trackingNumber ? `<div class="order-tracking">Número de guía: ${escapeHtml(order.trackingNumber)}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ---------- Panel de cuenta ----------
+  document.getElementById('avatarBtn').addEventListener('click', () => {
+    document.getElementById('overlay').classList.add('show');
+  });
+  document.getElementById('closePanel').addEventListener('click', () => {
+    document.getElementById('overlay').classList.remove('show');
+  });
+  document.getElementById('overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'overlay') document.getElementById('overlay').classList.remove('show');
+  });
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    try {
+      await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout', token })
+      });
+    } catch (err) { /* seguimos igual */ }
+    exitApp();
+  });
+
+  // ---------- Service worker + notificaciones push ----------
+  function registerServiceWorker(){
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      /* si falla el registro, seguimos sin push */
+    });
+  }
+
+  function urlBase64ToUint8Array(base64String){
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; i++) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
+  async function checkPushStatus(){
+    const btn = document.getElementById('pushBtn');
+    const status = document.getElementById('pushStatus');
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      btn.disabled = true;
+      btn.textContent = 'No disponible en este navegador';
+      return;
+    }
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        btn.style.display = 'none';
+        status.classList.add('show');
+      } else {
+        btn.style.display = 'block';
+        status.classList.remove('show');
+      }
+    } catch (err) {
+      /* service worker todavía no listo, se deja el botón visible */
+    }
+  }
+
+  document.getElementById('pushBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('pushBtn');
+    const status = document.getElementById('pushStatus');
+    btn.disabled = true;
+    btn.textContent = 'Activando...';
+
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        showToast('No se activaron las notificaciones');
+        btn.disabled = false;
+        btn.textContent = 'Activar notificaciones';
+        return;
+      }
+
+      const reg = await navigator.serviceWorker.ready;
+      const subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+
+      const token = localStorage.getItem(TOKEN_KEY);
+      const res = await fetch(PUSH_SUBSCRIBE_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, subscription })
+      });
+      if (!res.ok) throw new Error();
+
+      btn.style.display = 'none';
+      status.classList.add('show');
+      showToast('Notificaciones activadas');
+    } catch (err) {
+      showToast('No se pudieron activar las notificaciones');
+      btn.disabled = false;
+      btn.textContent = 'Activar notificaciones';
+    }
+  });
+  document.getElementById('pushStatus').addEventListener('click', async () => {
+    const btn = document.getElementById('pushBtn');
+    const status = document.getElementById('pushStatus');
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) await sub.unsubscribe();
+
+      const token = localStorage.getItem(TOKEN_KEY);
+      await fetch(PUSH_SUBSCRIBE_API, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+
+      status.classList.remove('show');
+      btn.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Activar notificaciones';
+      showToast('Notificaciones desactivadas');
+    } catch (err) {
+      showToast('No se pudieron desactivar las notificaciones');
+    }
+  });
+
+  // ---------- Verificar sesión guardada al abrir ----------
+  (async function init(){
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token){
+      return;
+    }
+    try {
+      const res = await fetch(`${AUTH_API}?token=${encodeURIComponent(token)}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      currentUser = data.user;
+      enterApp();
+    } catch (err) {
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  })();
+</script>
+
+</body>
+</html>
