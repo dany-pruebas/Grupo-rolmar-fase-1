@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premios y canjes · Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --danger: #b3261e;
+    --success: #1a7f37;
+    --warning: #9a6700;
+    --radius: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+    z-index: 10;
+  }
+
+  .header-left{ display:flex; align-items:center; gap:14px; }
+
+  .back-link{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    color: var(--navy);
+    text-decoration:none;
+    border:1px solid var(--line);
+  }
+  .back-link:hover{ border-color: var(--navy); }
+  .back-link svg{ width:18px; height:18px; }
+
+  .page-title{
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .page-sub{ font-size: 12px; color: var(--text-muted); }
+
+  .btn{
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 9px 16px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-primary{ background: var(--navy); color: var(--white); }
+  .btn-primary:hover{ background: var(--navy-dark); }
+  .btn-secondary{ background: var(--white); color: var(--text); border-color: var(--line); }
+  .btn-secondary:hover{ border-color: var(--navy); }
+  .btn-danger-text{
+    background:none; color: var(--danger); border:none;
+    font-size: 12px; font-weight: 600; cursor: pointer; padding: 4px 0;
+  }
+
+  main{ max-width: 1080px; margin:0 auto; padding: 28px 24px 60px; }
+
+  /* ---------- Tabs ---------- */
+  .tabs{ display:flex; gap:8px; margin-bottom: 22px; }
+  .tab-btn{
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--text-muted);
+    padding: 9px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .tab-btn.active{ background: var(--navy); border-color: var(--navy); color: #fff; }
+
+  .tab-panel{ display:none; }
+  .tab-panel.show{ display:block; }
+
+  /* ---------- Toolbar / filtros ---------- */
+  .toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .search{ flex:1; max-width: 320px; }
+  .search input{
+    width:100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .search input:focus{ outline:none; border-color: var(--navy); }
+
+  .filters{ display:flex; gap:8px; flex-wrap: wrap; }
+  .filter-btn{
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .filter-btn.active{ background: var(--navy); border-color: var(--navy); color: #fff; }
+
+  /* ---------- Grid de premios ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .card-photo{
+    width:100%; aspect-ratio: 1/1; background: var(--navy-soft);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .card-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .card-photo svg{ width:32px; height:32px; color: var(--navy); opacity:.4; }
+  .card-body{ padding: 12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1; }
+  .card-name{ font-size: 14px; font-weight: 600; }
+  .card-desc{
+    font-size: 12px; color: var(--text-muted); line-height:1.4;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:4px;
+  }
+  .card-meta{ display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:8px; }
+  .card-price{ font-size: 15px; font-weight: 700; color: var(--navy); }
+  .card-qty{
+    font-size: 11px; color: var(--text-muted); background: var(--bg);
+    border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px;
+  }
+  .card-qty.low{ color: var(--danger); border-color:#f2c9c6; background:#fbebea; }
+  .card-inactive-note{ font-size: 11px; color: var(--danger); font-weight:600; }
+  .card-actions{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 8px 14px 12px; border-top: 1px solid var(--line);
+  }
+  .link-btn{
+    background:none; border:none; font-family: inherit; font-size: 12px;
+    font-weight: 600; color: var(--navy); cursor: pointer; padding: 4px 0;
+  }
+
+  /* ---------- Canjes ---------- */
+  .order-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .order-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 10px; }
+  .order-customer{ font-size: 14px; font-weight: 700; }
+  .order-email{ font-size: 12px; color: var(--text-muted); }
+  .order-date{ font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .status-badge{
+    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  .status-disponible{ background: #d9ecff; color: #0b5fa5; }
+  .status-usado{ background: var(--navy-soft); color: var(--navy); }
+  .status-pendiente{ background: #fdf2d0; color: var(--warning); }
+  .status-entregado{ background: #ddf3e2; color: var(--success); }
+  .status-cancelado{ background: #fbe1df; color: var(--danger); }
+
+  .order-items{
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .order-items b{ font-family: monospace; }
+
+  .order-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px;
+  }
+  .order-total{ font-size: 13px; color: var(--text-muted); }
+
+  select.status-select{
+    font-family: inherit; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px;
+    color: var(--text); background: var(--white);
+  }
+
+  .empty-state{ text-align:center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    display:none; position: fixed; inset:0; background: rgba(13,23,48,0.45);
+    align-items:center; justify-content:center; padding: 20px; z-index: 50;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background: var(--white); border-radius: var(--radius); width:100%;
+    max-width: 440px; max-height: 90vh; overflow-y:auto; padding: 22px;
+  }
+  .modal-title{ font-size: 16px; font-weight: 700; margin: 0 0 16px; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display:block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+  .field input, .field textarea{
+    width:100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--line);
+    font-size: 13px; font-family: inherit; resize: vertical;
+  }
+  .field input:focus, .field textarea:focus{ outline:none; border-color: var(--navy); }
+  .field-hint{ font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .row-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .photo-upload{ display:flex; align-items:center; gap: 12px; }
+  .photo-preview{
+    width: 64px; height: 64px; border-radius: 8px; background: var(--navy-soft);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;
+  }
+  .photo-preview img{ width:100%; height:100%; object-fit:cover; }
+  .photo-preview svg{ width:24px; height:24px; color: var(--navy); opacity:.4; }
+  .file-label{
+    font-size: 12px; font-weight: 600; color: var(--navy); border: 1px solid var(--line);
+    padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  }
+  .file-label:hover{ border-color: var(--navy); }
+  .file-label input{ display:none; }
+
+  .check-row{ display:flex; align-items:center; gap:8px; }
+  .check-row input{ width:auto; }
+  .check-row label{ margin:0; font-size: 13px; font-weight: 600; color: var(--text); }
+
+  .modal-actions{ display:flex; justify-content:flex-end; gap: 10px; margin-top: 18px; }
+  .field-error{ font-size: 11px; color: var(--danger); margin-top: 4px; display:none; }
+
+  .toast{
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--navy-dark); color: var(--white); padding: 10px 18px; border-radius: 8px;
+    font-size: 13px; opacity: 0; pointer-events:none; transition: opacity .2s ease, transform .2s ease; z-index: 60;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px){
+    .toolbar{ flex-direction:column; align-items:stretch; gap:12px; }
+    .search{ max-width:none; }
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 16px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a class="back-link" href="index.html" title="Volver al panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </a>
+    <div>
+      <div class="page-title">Premios y canjes</div>
+      <div class="page-sub">Catálogo de premios y seguimiento de canjes de puntos</div>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="btnNewReward">+ Agregar premio</button>
+</header>
+
+<main>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="catalogo">Catálogo de premios</button>
+    <button class="tab-btn" data-tab="canjes">Canjes</button>
+  </div>
+
+  <!-- ---------- Tab: catálogo de premios ---------- -->
+  <div class="tab-panel show" id="tabCatalogo">
+    <div class="toolbar">
+      <div class="search">
+        <input type="text" id="searchInput" placeholder="Buscar premio...">
+      </div>
+      <div class="page-sub" id="countLabel">0 premios</div>
+    </div>
+
+    <div id="rewardsGridWrap">
+      <div class="empty-state" id="rewardsEmptyState">Cargando premios...</div>
+      <div class="grid" id="rewardsGrid" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ---------- Tab: canjes ---------- -->
+  <div class="tab-panel" id="tabCanjes">
+    <div class="filters" id="redemptionFilters">
+      <button class="filter-btn active" data-filter="todos">Todos</button>
+      <button class="filter-btn" data-filter="discount">Descuentos</button>
+      <button class="filter-btn" data-filter="reward">Premios</button>
+      <button class="filter-btn" data-filter="pendientes">Pendientes / disponibles</button>
+      <button class="filter-btn" data-filter="cancelado">Cancelados</button>
+    </div>
+
+    <div id="redemptionsWrap">
+      <div class="empty-state" id="redemptionsEmptyState">Cargando canjes...</div>
+      <div id="redemptionsList"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modal: crear / editar premio -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Agregar premio</div>
+    <form id="rewardForm">
+      <input type="hidden" id="rewardId">
+
+      <div class="field">
+        <label>Foto del premio</label>
+        <div class="photo-upload">
+          <div class="photo-preview" id="photoPreview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+          <label class="file-label">
+            Elegir imagen
+            <input type="file" id="photoInput" accept="image/*">
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="nameInput">Nombre del premio</label>
+        <input type="text" id="nameInput" placeholder="Ej. Almohada de regalo" required>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="pointsCostInput">Costo en puntos</label>
+          <input type="number" id="pointsCostInput" min="1" step="1" placeholder="Ej. 500" required>
+        </div>
+        <div class="field">
+          <label for="qtyInput">Cantidad disponible</label>
+          <input type="number" id="qtyInput" min="0" step="1" placeholder="Vacío = ilimitado">
+        </div>
+      </div>
+      <div class="field-hint" style="margin-top:-8px; margin-bottom:14px;">Deja "Cantidad disponible" vacío si el premio no tiene límite de existencias.</div>
+
+      <div class="field">
+        <label for="descInput">Descripción</label>
+        <textarea id="descInput" rows="3" placeholder="Detalles del premio..."></textarea>
+      </div>
+
+      <div class="field check-row">
+        <input type="checkbox" id="activeInput" checked>
+        <label for="activeInput">Premio activo (visible para los clientes)</label>
+      </div>
+
+      <div class="field-error" id="formError">Completa el nombre y el costo en puntos.</div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="btnCancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnSave">Guardar premio</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const REWARDS_API = '/.netlify/functions/rewards';
+  const REDEMPTIONS_API = '/.netlify/functions/redemptions';
+
+  const rewardsGrid = document.getElementById('rewardsGrid');
+  const rewardsEmptyState = document.getElementById('rewardsEmptyState');
+  const countLabel = document.getElementById('countLabel');
+  const searchInput = document.getElementById('searchInput');
+  const overlay = document.getElementById('overlay');
+  const rewardForm = document.getElementById('rewardForm');
+  const modalTitle = document.getElementById('modalTitle');
+  const formError = document.getElementById('formError');
+  const photoInput = document.getElementById('photoInput');
+  const photoPreview = document.getElementById('photoPreview');
+  const toast = document.getElementById('toast');
+
+  let rewards = [];
+  let redemptions = [];
+  let currentPhotoData = '';
+  let redemptionFilter = 'todos';
+  let toastTimer;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function formatQ(n){
+    return 'Q' + Number(n).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatDate(ts){
+    return new Date(ts).toLocaleString('es-GT', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function emptyPhotoIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+  }
+
+  // ---------- Tabs ----------
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('show'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      document.getElementById(tab === 'catalogo' ? 'tabCatalogo' : 'tabCanjes').classList.add('show');
+      if (tab === 'canjes') loadRedemptions();
+    });
+  });
+
+  // ---------- Catálogo de premios ----------
+  async function loadRewards(){
+    try {
+      const res = await fetch(REWARDS_API);
+      if (!res.ok) throw new Error();
+      rewards = await res.json();
+    } catch (err) {
+      rewards = [];
+      showToast('No se pudo conectar con el catálogo de premios');
+    }
+    renderRewards();
+  }
+
+  function renderRewards(){
+    const term = searchInput.value.trim().toLowerCase();
+    const filtered = rewards.filter(r => r.name.toLowerCase().includes(term));
+
+    countLabel.textContent = rewards.length + (rewards.length === 1 ? ' premio' : ' premios');
+
+    if (filtered.length === 0){
+      rewardsGrid.style.display = 'none';
+      rewardsEmptyState.style.display = 'block';
+      rewardsEmptyState.textContent = rewards.length === 0
+        ? 'Todavía no hay premios. Agrega el primero con el botón de arriba.'
+        : 'No se encontraron premios con ese nombre.';
+      return;
+    }
+
+    rewardsEmptyState.style.display = 'none';
+    rewardsGrid.style.display = 'grid';
+
+    rewardsGrid.innerHTML = filtered.map(r => {
+      const hasLimit = r.quantity !== null && r.quantity !== undefined;
+      const low = hasLimit && Number(r.quantity) <= 3;
+      const qtyLabel = hasLimit ? `${r.quantity} en stock` : 'Ilimitado';
+      return `
+        <div class="card" data-id="${r.id}">
+          <div class="card-photo">
+            ${r.photo ? `<img src="${r.photo}" alt="${escapeHtml(r.name)}">` : emptyPhotoIcon()}
+          </div>
+          <div class="card-body">
+            <div class="card-name">${escapeHtml(r.name)}</div>
+            ${r.description ? `<div class="card-desc">${escapeHtml(r.description)}</div>` : ''}
+            <div class="card-meta">
+              <div class="card-price">${r.pointsCost} pts</div>
+              <div class="card-qty ${low ? 'low' : ''}">${qtyLabel}</div>
+            </div>
+            ${r.active === false ? '<div class="card-inactive-note">Inactivo (oculto para clientes)</div>' : ''}
+          </div>
+          <div class="card-actions">
+            <button class="link-btn" data-edit="${r.id}">Editar</button>
+            <button class="btn-danger-text" data-delete="${r.id}">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function openModal(reward){
+    formError.style.display = 'none';
+    if (reward){
+      modalTitle.textContent = 'Editar premio';
+      document.getElementById('rewardId').value = reward.id;
+      document.getElementById('nameInput').value = reward.name;
+      document.getElementById('pointsCostInput').value = reward.pointsCost;
+      document.getElementById('qtyInput').value = (reward.quantity === null || reward.quantity === undefined) ? '' : reward.quantity;
+      document.getElementById('descInput').value = reward.description || '';
+      document.getElementById('activeInput').checked = reward.active !== false;
+      currentPhotoData = reward.photo || '';
+      photoPreview.innerHTML = currentPhotoData ? `<img src="${currentPhotoData}">` : emptyPhotoIcon();
+    } else {
+      modalTitle.textContent = 'Agregar premio';
+      rewardForm.reset();
+      document.getElementById('rewardId').value = '';
+      document.getElementById('activeInput').checked = true;
+      currentPhotoData = '';
+      photoPreview.innerHTML = emptyPhotoIcon();
+    }
+    overlay.classList.add('show');
+  }
+
+  function closeModal(){ overlay.classList.remove('show'); }
+
+  document.getElementById('btnNewReward').addEventListener('click', () => openModal(null));
+  document.getElementById('btnCancel').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      currentPhotoData = reader.result;
+      photoPreview.innerHTML = `<img src="${currentPhotoData}">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  rewardForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById('rewardId').value;
+    const name = document.getElementById('nameInput').value.trim();
+    const pointsCost = document.getElementById('pointsCostInput').value;
+    const qtyRaw = document.getElementById('qtyInput').value;
+    const description = document.getElementById('descInput').value.trim();
+    const active = document.getElementById('activeInput').checked;
+
+    if (!name || pointsCost === ''){
+      formError.style.display = 'block';
+      return;
+    }
+    formError.style.display = 'none';
+
+    const payload = {
+      name,
+      pointsCost: Number(pointsCost),
+      quantity: qtyRaw === '' ? null : Number(qtyRaw),
+      description,
+      photo: currentPhotoData,
+      active
+    };
+
+    const btnSave = document.getElementById('btnSave');
+    btnSave.disabled = true;
+    btnSave.textContent = 'Guardando...';
+
+    try {
+      let res;
+      if (id){
+        res = await fetch(`${REWARDS_API}?id=${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await fetch(REWARDS_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al guardar');
+      closeModal();
+      showToast(id ? 'Premio actualizado' : 'Premio agregado');
+      await loadRewards();
+    } catch (err) {
+      showToast(err.message || 'No se pudo guardar el premio');
+    } finally {
+      btnSave.disabled = false;
+      btnSave.textContent = 'Guardar premio';
+    }
+  });
+
+  rewardsGrid.addEventListener('click', async (e) => {
+    const editId = e.target.dataset.edit;
+    const deleteId = e.target.dataset.delete;
+
+    if (editId){
+      const r = rewards.find(x => x.id === editId);
+      if (r) openModal(r);
+    }
+
+    if (deleteId){
+      const r = rewards.find(x => x.id === deleteId);
+      if (!r) return;
+      if (!confirm(`¿Eliminar "${r.name}" del catálogo de premios?`)) return;
+      try {
+        const res = await fetch(`${REWARDS_API}?id=${deleteId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        showToast('Premio eliminado');
+        await loadRewards();
+      } catch (err) {
+        showToast('No se pudo eliminar el premio');
+      }
+    }
+  });
+
+  searchInput.addEventListener('input', renderRewards);
+
+  // ---------- Canjes ----------
+  const STATUS_LABELS = {
+    disponible: 'Disponible',
+    usado: 'Usado',
+    pendiente: 'Pendiente',
+    entregado: 'Entregado',
+    cancelado: 'Cancelado'
+  };
+
+  async function loadRedemptions(){
+    const wrap = document.getElementById('redemptionsEmptyState');
+    try {
+      const res = await fetch(REDEMPTIONS_API);
+      if (!res.ok) throw new Error();
+      redemptions = await res.json();
+    } catch (err) {
+      redemptions = [];
+      showToast('No se pudieron cargar los canjes');
+    }
+    renderRedemptions();
+  }
+
+  function matchesFilter(r){
+    if (redemptionFilter === 'todos') return true;
+    if (redemptionFilter === 'discount') return r.type === 'discount';
+    if (redemptionFilter === 'reward') return r.type === 'reward';
+    if (redemptionFilter === 'cancelado') return r.status === 'cancelado';
+    if (redemptionFilter === 'pendientes') return r.status === 'pendiente' || r.status === 'disponible';
+    return true;
+  }
+
+  function statusOptions(type, current){
+    const valid = type === 'discount'
+      ? ['disponible', 'usado', 'cancelado']
+      : ['pendiente', 'entregado', 'cancelado'];
+    return valid.map(s => `<option value="${s}" ${s === current ? 'selected' : ''}>${STATUS_LABELS[s]}</option>`).join('');
+  }
+
+  function renderRedemptions(){
+    const list = document.getElementById('redemptionsList');
+    const emptyState = document.getElementById('redemptionsEmptyState');
+    const filtered = redemptions.filter(matchesFilter);
+
+    if (filtered.length === 0){
+      list.innerHTML = '';
+      emptyState.style.display = 'block';
+      emptyState.textContent = redemptions.length === 0 ? 'Todavía no hay canjes.' : 'No hay canjes con este filtro.';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+
+    list.innerHTML = filtered.map(r => {
+      const detail = r.type === 'discount'
+        ? `Descuento de ${formatQ(r.discountValue)} · Código: <b>${escapeHtml(r.voucherCode)}</b>`
+        : `Premio: ${escapeHtml(r.rewardName)}`;
+      return `
+        <div class="order-card">
+          <div class="order-top">
+            <div>
+              <div class="order-customer">${escapeHtml(r.customerName)}</div>
+              <div class="order-email">${escapeHtml(r.email)}</div>
+              <div class="order-date">${formatDate(r.createdAt)}</div>
+            </div>
+            <span class="status-badge status-${r.status}">${STATUS_LABELS[r.status] || r.status}</span>
+          </div>
+          <div class="order-items">${detail}</div>
+          <div class="order-bottom">
+            <div class="order-total">${r.pointsUsed} puntos usados</div>
+            <select class="status-select" data-id="${r.id}" data-type="${r.type}">
+              ${statusOptions(r.type, r.status)}
+            </select>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('redemptionFilters').addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('#redemptionFilters .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    redemptionFilter = btn.dataset.filter;
+    renderRedemptions();
+  });
+
+  document.getElementById('redemptionsList').addEventListener('change', async (e) => {
+    const select = e.target.closest('.status-select');
+    if (!select) return;
+    const id = select.dataset.id;
+    const status = select.value;
+
+    try {
+      const res = await fetch(`${REDEMPTIONS_API}?id=${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Error al actualizar');
+      const r = redemptions.find(x => x.id === id);
+      if (r) r.status = status;
+      showToast('Estado actualizado');
+      renderRedemptions();
+    } catch (err) {
+      showToast(err.message || 'No se pudo actualizar el estado');
+      loadRedemptions();
+    }
+  });
+
+  loadRewards();
+</script>
+
+</body>
+</html>
