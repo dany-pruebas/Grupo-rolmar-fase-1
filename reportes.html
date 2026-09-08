@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes — Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --success: #1a7f37;
+    --warning: #9a6700;
+    --danger: #b3261e;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:36px; height:36px; border-radius:8px;
+    background: var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family: Georgia, serif; font-weight:700; font-size:15px;
+  }
+  .brand-name{ font-family: Georgia, serif; font-weight:700; font-size:16px; color: var(--navy); }
+  a.back{ font-size:13px; color: var(--navy); text-decoration:none; font-weight:600; }
+
+  main{ max-width: 860px; margin:0 auto; padding: 24px 20px 60px; }
+
+  .filters{
+    display:flex;
+    gap:8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .filter-btn{
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .filter-btn.active{
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .stat-label{ font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-value{ font-size: 19px; font-weight: 700; color: var(--navy); }
+
+  .section-title{
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 12px;
+  }
+
+  .card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 22px;
+  }
+
+  /* ---------- Gráfica de barras (ventas por día) ---------- */
+  .chart{
+    display:flex;
+    align-items:flex-end;
+    gap: 4px;
+    height: 160px;
+    padding-top: 10px;
+  }
+  .chart-bar-wrap{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+    min-width: 6px;
+  }
+  .chart-bar{
+    width:100%;
+    max-width: 22px;
+    background: var(--navy);
+    border-radius: 4px 4px 0 0;
+    transition: background .15s ease;
+  }
+  .chart-bar:hover{ background: var(--navy-dark); }
+  .chart-empty{
+    text-align:center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 40px 0;
+  }
+  .chart-labels{
+    display:flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  /* ---------- Estados de pedidos ---------- */
+  .status-list{ display:flex; flex-direction:column; gap: 10px; }
+  .status-row{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .status-name{
+    width: 90px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink:0;
+  }
+  .status-track{
+    flex:1;
+    background: var(--navy-soft);
+    border-radius: 6px;
+    height: 14px;
+    overflow:hidden;
+  }
+  .status-fill{
+    height:100%;
+    border-radius: 6px;
+    background: var(--navy);
+  }
+  .status-fill.pendiente{ background: var(--warning); }
+  .status-fill.preparando{ background: var(--navy); }
+  .status-fill.enviado{ background: #0b5fa5; }
+  .status-fill.completado{ background: var(--success); }
+  .status-fill.cancelado{ background: var(--danger); }
+  .status-count{
+    width: 26px;
+    text-align: right;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+    flex-shrink:0;
+  }
+
+  /* ---------- Top productos ---------- */
+  .product-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .product-row:last-child{ border-bottom: none; }
+  .product-name{ font-weight: 600; }
+  .product-qty{ font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .product-revenue{ font-weight: 700; color: var(--navy); white-space: nowrap; }
+
+  .empty-note{
+    text-align:center;
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 30px 0;
+  }
+
+  @media (max-width: 640px){
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 14px 48px; }
+    .stats{ grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">GR</div>
+    <div class="brand-name">Reportes</div>
+  </div>
+  <a class="back" href="index.html">← Panel</a>
+</header>
+
+<main>
+  <div class="filters" id="filters">
+    <button class="filter-btn" data-range="7">7 días</button>
+    <button class="filter-btn active" data-range="30">30 días</button>
+    <button class="filter-btn" data-range="90">90 días</button>
+    <button class="filter-btn" data-range="all">Todo</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Ventas totales</div>
+      <div class="stat-value" id="statRevenue">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pedidos</div>
+      <div class="stat-value" id="statOrders">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ticket promedio</div>
+      <div class="stat-value" id="statAvg">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Clientes nuevos</div>
+      <div class="stat-value" id="statNewClients">—</div>
+    </div>
+  </div>
+
+  <div class="section-title">Ventas por día</div>
+  <div class="card">
+    <div class="chart" id="chart"></div>
+    <div class="chart-labels" id="chartLabels"></div>
+  </div>
+
+  <div class="section-title">Pedidos por estado</div>
+  <div class="card">
+    <div class="status-list" id="statusList"></div>
+  </div>
+
+  <div class="section-title">Productos más vendidos</div>
+  <div class="card">
+    <div id="topProducts"></div>
+  </div>
+</main>
+
+<script>
+  const REPORTS_API = '/.netlify/functions/reports';
+  let currentRange = '30';
+
+  function formatQ(n){
+    return 'Q' + Number(n || 0).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatShortDate(dateStr){
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}`;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  const STATUS_LABELS = {
+    pendiente: 'Pendiente',
+    preparando: 'Preparando',
+    enviado: 'Enviado',
+    completado: 'Completado',
+    cancelado: 'Cancelado'
+  };
+
+  async function loadReport(){
+    document.getElementById('statRevenue').textContent = '...';
+    document.getElementById('statOrders').textContent = '...';
+    document.getElementById('statAvg').textContent = '...';
+    document.getElementById('statNewClients').textContent = '...';
+
+    try {
+      const res = await fetch(`${REPORTS_API}?range=${currentRange}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      render(data);
+    } catch (err) {
+      document.getElementById('statRevenue').textContent = 'Error';
+      document.getElementById('statOrders').textContent = '—';
+      document.getElementById('statAvg').textContent = '—';
+      document.getElementById('statNewClients').textContent = '—';
+    }
+  }
+
+  function render(data){
+    document.getElementById('statRevenue').textContent = formatQ(data.totalRevenue);
+    document.getElementById('statOrders').textContent = data.totalOrders;
+    document.getElementById('statAvg').textContent = formatQ(data.avgOrderValue);
+    document.getElementById('statNewClients').textContent = data.newClients;
+
+    renderChart(data.dailySales);
+    renderStatus(data.ordersByStatus);
+    renderTopProducts(data.topProducts);
+  }
+
+  function renderChart(dailySales){
+    const chart = document.getElementById('chart');
+    const labels = document.getElementById('chartLabels');
+
+    if (!dailySales || dailySales.length === 0){
+      chart.innerHTML = '<div class="chart-empty">Todavía no hay ventas en este período.</div>';
+      labels.innerHTML = '';
+      return;
+    }
+
+    const max = Math.max(...dailySales.map(d => d.total), 1);
+
+    chart.innerHTML = dailySales.map(d => {
+      const heightPct = Math.max((d.total / max) * 100, 2);
+      const title = `${formatShortDate(d.date)}: ${formatQ(d.total)} (${d.count} pedido${d.count === 1 ? '' : 's'})`;
+      return `
+        <div class="chart-bar-wrap" title="${escapeHtml(title)}">
+          <div class="chart-bar" style="height:${heightPct}%"></div>
+        </div>
+      `;
+    }).join('');
+
+    // Mostrar solo primera, media y última fecha para no saturar en móvil
+    const first = dailySales[0];
+    const mid = dailySales[Math.floor(dailySales.length / 2)];
+    const last = dailySales[dailySales.length - 1];
+    labels.innerHTML = `
+      <span>${formatShortDate(first.date)}</span>
+      ${dailySales.length > 2 ? `<span>${formatShortDate(mid.date)}</span>` : ''}
+      <span>${formatShortDate(last.date)}</span>
+    `;
+  }
+
+  function renderStatus(ordersByStatus){
+    const list = document.getElementById('statusList');
+    const max = Math.max(...Object.values(ordersByStatus), 1);
+
+    list.innerHTML = Object.keys(STATUS_LABELS).map(key => {
+      const count = ordersByStatus[key] || 0;
+      const pct = (count / max) * 100;
+      return `
+        <div class="status-row">
+          <div class="status-name">${STATUS_LABELS[key]}</div>
+          <div class="status-track"><div class="status-fill ${key}" style="width:${pct}%"></div></div>
+          <div class="status-count">${count}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderTopProducts(topProducts){
+    const wrap = document.getElementById('topProducts');
+
+    if (!topProducts || topProducts.length === 0){
+      wrap.innerHTML = '<div class="empty-note">Todavía no hay productos vendidos en este período.</div>';
+      return;
+    }
+
+    wrap.innerHTML = topProducts.map(p => `
+      <div class="product-row">
+        <div>
+          <div class="product-name">${escapeHtml(p.name)}</div>
+          <div class="product-qty">${p.quantitySold} unidades vendidas</div>
+        </div>
+        <div class="product-revenue">${formatQ(p.revenue)}</div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('filters').addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRange = btn.dataset.range;
+    loadReport();
+  });
+
+  loadReport();
+</script>
+
+</body>
+</html>
