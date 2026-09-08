@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clientes — Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --success: #1a7f37;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:36px; height:36px; border-radius:8px;
+    background: var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family: Georgia, serif; font-weight:700; font-size:15px;
+  }
+  .brand-name{ font-family: Georgia, serif; font-weight:700; font-size:16px; color: var(--navy); }
+  a.back{ font-size:13px; color: var(--navy); text-decoration:none; font-weight:600; }
+
+  main{ max-width: 780px; margin:0 auto; padding: 24px 20px 60px; }
+
+  .search{ margin-bottom: 18px; }
+  .search input{
+    width:100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .search input:focus{ outline:none; border-color: var(--navy); }
+
+  .summary-row{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .summary-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .summary-label{ font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .summary-value{ font-size: 18px; font-weight: 700; color: var(--navy); }
+
+  .client-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+  .client-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+  }
+  .client-name{ font-size: 14px; font-weight: 700; }
+  .client-email{ font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .client-since{ font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .client-points{
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy);
+    background: var(--navy-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .client-stats{
+    display:flex;
+    gap: 18px;
+    border-top: 1px solid var(--line);
+    margin-top: 12px;
+    padding-top: 10px;
+  }
+  .client-stat-label{ font-size: 10.5px; color: var(--text-muted); }
+  .client-stat-value{ font-size: 13px; font-weight: 700; color: var(--text); margin-top: 1px; }
+  .client-stat-value.money{ color: var(--success); }
+
+  .no-orders-note{
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  @media (max-width: 640px){
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 14px 48px; }
+    .summary-row{ grid-template-columns: 1fr; }
+    .client-stats{ flex-wrap: wrap; row-gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">GR</div>
+    <div class="brand-name">Clientes</div>
+  </div>
+  <a class="back" href="index.html">← Panel</a>
+</header>
+
+<main>
+  <div class="summary-row" id="summaryRow">
+    <div class="summary-card">
+      <div class="summary-label">Clientes registrados</div>
+      <div class="summary-value" id="summaryTotal">—</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Con al menos 1 pedido</div>
+      <div class="summary-value" id="summaryActive">—</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Ventas totales</div>
+      <div class="summary-value" id="summarySpent">—</div>
+    </div>
+  </div>
+
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Buscar por nombre o correo...">
+  </div>
+
+  <div id="clientsWrap">
+    <div class="empty-state" id="emptyState">Cargando clientes...</div>
+    <div id="clientsList"></div>
+  </div>
+</main>
+
+<script>
+  const CLIENTS_API = '/.netlify/functions/clients';
+  let clients = [];
+
+  function formatQ(n){
+    return 'Q' + Number(n || 0).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatDate(ts){
+    if (!ts) return null;
+    return new Date(ts).toLocaleDateString('es-GT', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function loadClients(){
+    try {
+      const res = await fetch(CLIENTS_API);
+      if (!res.ok) throw new Error();
+      clients = await res.json();
+    } catch (err) {
+      clients = [];
+    }
+    renderSummary();
+    render();
+  }
+
+  function renderSummary(){
+    const total = clients.length;
+    const active = clients.filter(c => c.ordersCount > 0).length;
+    const spent = clients.reduce((sum, c) => sum + (c.totalSpent || 0), 0);
+
+    document.getElementById('summaryTotal').textContent = total;
+    document.getElementById('summaryActive').textContent = active;
+    document.getElementById('summarySpent').textContent = formatQ(spent);
+  }
+
+  function render(){
+    const term = document.getElementById('searchInput').value.trim().toLowerCase();
+    const filtered = clients.filter(c =>
+      c.name.toLowerCase().includes(term) || c.email.toLowerCase().includes(term)
+    );
+
+    const list = document.getElementById('clientsList');
+    const emptyState = document.getElementById('emptyState');
+
+    if (filtered.length === 0){
+      list.innerHTML = '';
+      emptyState.style.display = 'block';
+      emptyState.textContent = clients.length === 0
+        ? 'Todavía no hay clientes registrados.'
+        : 'No se encontraron clientes con ese nombre o correo.';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+
+    list.innerHTML = filtered.map(c => {
+      const since = formatDate(c.createdAt);
+      const last = formatDate(c.lastOrderAt);
+
+      const statsHtml = c.ordersCount > 0 ? `
+        <div class="client-stats">
+          <div>
+            <div class="client-stat-label">Pedidos</div>
+            <div class="client-stat-value">${c.ordersCount}</div>
+          </div>
+          <div>
+            <div class="client-stat-label">Total gastado</div>
+            <div class="client-stat-value money">${formatQ(c.totalSpent)}</div>
+          </div>
+          ${last ? `
+          <div>
+            <div class="client-stat-label">Última compra</div>
+            <div class="client-stat-value">${last}</div>
+          </div>` : ''}
+        </div>
+      ` : `<div class="no-orders-note">Este cliente todavía no ha hecho ningún pedido.</div>`;
+
+      return `
+        <div class="client-card">
+          <div class="client-top">
+            <div>
+              <div class="client-name">${escapeHtml(c.name)}</div>
+              <div class="client-email">${escapeHtml(c.email)}</div>
+              ${since ? `<div class="client-since">Cliente desde ${since}</div>` : ''}
+            </div>
+            <span class="client-points">${c.points} puntos</span>
+          </div>
+          ${statsHtml}
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('searchInput').addEventListener('input', render);
+
+  loadClients();
+</script>
+
+</body>
+</html>
