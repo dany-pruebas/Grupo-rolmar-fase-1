@@ -240,15 +240,22 @@ export default async (req) => {
       index.push(orderId);
       await saveIndex(os, 'orders:index', index);
 
-      // Sumar puntos ganados y descontar el saldo usado
+      // Sumar puntos ganados, descontar el saldo usado y actualizar la dirección guardada
+      // (así la próxima compra o canje ya la trae prellenada, sin que el cliente la vuelva a escribir).
       const updatedUser = {
         ...user,
         points: (user.points || 0) + pointsEarned,
-        creditBalance: Math.round((availableCredit - creditApplied) * 100) / 100
+        creditBalance: Math.round((availableCredit - creditApplied) * 100) / 100,
+        savedAddress: order.address
       };
       await as.setJSON(`user:${user.email}`, updatedUser);
 
-      return jsonResponse(201, { order, points: updatedUser.points, creditBalance: updatedUser.creditBalance });
+      return jsonResponse(201, {
+        order,
+        points: updatedUser.points,
+        creditBalance: updatedUser.creditBalance,
+        savedAddress: updatedUser.savedAddress
+      });
     }
 
     // ---------- PUT: cambiar estado o número de guía del pedido (admin) ----------
