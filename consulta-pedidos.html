@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consultar pedidos — Grupo Rolmar</title>
+<style>
+  :root{
+    --navy: #16234f;
+    --navy-dark: #0d1730;
+    --navy-soft: #eceff6;
+    --line: #dde1ea;
+    --bg: #f6f7f9;
+    --text: #1c1f2a;
+    --text-muted: #6b7280;
+    --white: #ffffff;
+    --danger: #b3261e;
+    --success: #1a7f37;
+    --warning: #9a6700;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header{
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position: sticky;
+    top:0;
+    z-index: 10;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:36px; height:36px; border-radius:8px;
+    background: var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family: Georgia, serif; font-weight:700; font-size:15px;
+  }
+  .brand-name{ font-family: Georgia, serif; font-weight:700; font-size:16px; color: var(--navy); }
+
+  main{ max-width: 780px; margin:0 auto; padding: 24px 20px 60px; }
+
+  /* ---------- Buscador ---------- */
+  .search-box{
+    position: relative;
+    margin-bottom: 18px;
+  }
+  .search-box svg{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform: translateY(-50%);
+    width:16px;
+    height:16px;
+    color: var(--text-muted);
+    pointer-events:none;
+  }
+  .search-box input{
+    width:100%;
+    padding: 11px 14px 11px 36px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--white);
+  }
+  .search-box input:focus{ outline:none; border-color: var(--navy); }
+
+  /* ---------- Tarjeta colapsada ---------- */
+  .order-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .order-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    padding: 15px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .order-row-left{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .order-customer{ font-size: 14px; font-weight: 700; }
+  .order-date{ font-size: 11px; color: var(--text-muted); }
+  .order-row-right{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+  .status-badge{
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .status-pendiente{ background: #fdf2d0; color: var(--warning); }
+  .status-preparando{ background: var(--navy-soft); color: var(--navy); }
+  .status-enviado{ background: #d9ecff; color: #0b5fa5; }
+  .status-completado{ background: #ddf3e2; color: var(--success); }
+  .status-cancelado{ background: #fbe1df; color: var(--danger); }
+
+  .chevron{
+    width:18px; height:18px;
+    color: var(--text-muted);
+    transition: transform .2s ease;
+    flex-shrink:0;
+  }
+  .order-card.expanded .chevron{ transform: rotate(180deg); }
+
+  /* ---------- Detalle expandido ---------- */
+  .order-detail{
+    display:none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--line);
+  }
+  .order-card.expanded .order-detail{ display:block; }
+
+  .order-email{ font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+
+  .order-address{
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .order-address-row{ display:flex; gap:6px; }
+  .order-address-label{ font-weight: 700; color: var(--navy); flex-shrink: 0; min-width: 78px; }
+  .order-address-value{ color: var(--text); }
+  .order-address a{ color: var(--navy); text-decoration: none; font-weight: 600; }
+
+  .order-tracking{
+    background: var(--navy-soft);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--navy);
+    margin-top: 10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .order-tracking b{ font-family: monospace; font-size: 12px; }
+
+  .order-billing{ font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+
+  .order-items{
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+    margin-top: 12px;
+  }
+  .order-item-row{
+    display:flex;
+    justify-content:space-between;
+    font-size: 13px;
+    padding: 3px 0;
+  }
+  .order-item-name{ color: var(--text); }
+  .order-item-qty{ color: var(--text-muted); }
+
+  .order-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top: 1px solid var(--line);
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  .order-total{ font-size: 15px; font-weight: 700; color: var(--navy); }
+  .order-points{ font-size: 11px; color: var(--success); }
+
+  .empty-state{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* ---------- Totales vendidos (confirmados) ---------- */
+  .totals-bar{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .totals-card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .totals-label{
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .totals-value{
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .totals-note{
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 480px){
+    .totals-bar{ grid-template-columns: 1fr 1fr; }
+    .totals-value{ font-size: 17px; }
+  }
+
+  @media (max-width: 640px){
+    header{ padding: 12px 16px; }
+    main{ padding: 20px 14px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">GR</div>
+    <div class="brand-name">Consultar pedidos</div>
+  </div>
+</header>
+
+<main>
+  <div class="totals-bar">
+    <div class="totals-card">
+      <div class="totals-label">Total vendido confirmado</div>
+      <div class="totals-value" id="totalVendido">Q0.00</div>
+    </div>
+    <div class="totals-card">
+      <div class="totals-label">Pedidos confirmados</div>
+      <div class="totals-value" id="totalConfirmados">0</div>
+    </div>
+    <div class="totals-note">No incluye pedidos cancelados. Se actualiza según lo que busques.</div>
+  </div>
+
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" id="searchInput" placeholder="Buscar por nombre, correo o número de pedido...">
+  </div>
+
+  <div id="ordersWrap">
+    <div class="empty-state" id="emptyState">Cargando pedidos...</div>
+    <div id="ordersList"></div>
+  </div>
+</main>
+
+<script>
+  const ORDERS_API = '/.netlify/functions/orders';
+  let orders = [];
+
+  const STATUS_LABELS = {
+    pendiente: 'Pendiente',
+    preparando: 'Preparando',
+    enviado: 'Enviado',
+    completado: 'Completado',
+    cancelado: 'Cancelado'
+  };
+
+  function formatQ(n){
+    return 'Q' + Number(n).toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function formatDate(ts){
+    return new Date(ts).toLocaleString('es-GT', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : str;
+    return div.innerHTML;
+  }
+
+  async function loadOrders(){
+    try {
+      const res = await fetch(ORDERS_API);
+      if (!res.ok) throw new Error();
+      orders = await res.json();
+    } catch (err) {
+      orders = [];
+      document.getElementById('emptyState').textContent = 'No se pudieron cargar los pedidos.';
+    }
+    render();
+  }
+
+  function renderAddress(o){
+    const a = o.address;
+    if (!a) return '';
+    const rows = [];
+    if (a.fullName) rows.push(`<div class="order-address-row"><span class="order-address-label">Recibe:</span><span class="order-address-value">${escapeHtml(a.fullName)}</span></div>`);
+    if (a.phone) rows.push(`<div class="order-address-row"><span class="order-address-label">Teléfono:</span><span class="order-address-value"><a href="tel:${escapeHtml(a.phone)}">${escapeHtml(a.phone)}</a></span></div>`);
+    if (a.line1) rows.push(`<div class="order-address-row"><span class="order-address-label">Dirección:</span><span class="order-address-value">${escapeHtml(a.line1)}</span></div>`);
+    if (a.city) rows.push(`<div class="order-address-row"><span class="order-address-label">Municipio:</span><span class="order-address-value">${escapeHtml(a.city)}</span></div>`);
+    if (a.reference) rows.push(`<div class="order-address-row"><span class="order-address-label">Referencia:</span><span class="order-address-value">${escapeHtml(a.reference)}</span></div>`);
+    if (rows.length === 0) return '';
+    return `<div class="order-address">${rows.join('')}</div>`;
+  }
+
+  function matchesSearch(o, term){
+    if (!term) return true;
+    const haystack = [
+      o.customerName,
+      o.email,
+      o.id,
+      o.trackingNumber,
+      o.address && o.address.fullName,
+      o.address && o.address.phone
+    ].filter(Boolean).join(' ').toLowerCase();
+    return haystack.includes(term);
+  }
+
+  function renderTotals(filtered){
+    // Confirmado = todo lo que no está cancelado (pendiente, preparando, enviado o completado ya cuenta como venta real)
+    const confirmados = filtered.filter(o => o.status !== 'cancelado');
+    const totalVendido = confirmados.reduce((suma, o) => suma + (Number(o.total) || 0), 0);
+    document.getElementById('totalVendido').textContent = formatQ(totalVendido);
+    document.getElementById('totalConfirmados').textContent = confirmados.length;
+  }
+
+  function render(){
+    const term = document.getElementById('searchInput').value.trim().toLowerCase();
+    const list = document.getElementById('ordersList');
+    const emptyState = document.getElementById('emptyState');
+    const filtered = orders.filter(o => matchesSearch(o, term));
+
+    renderTotals(filtered);
+
+    if (filtered.length === 0){
+      list.innerHTML = '';
+      emptyState.style.display = 'block';
+      emptyState.textContent = orders.length === 0 ? 'Todavía no hay pedidos.' : 'No se encontraron pedidos con esa búsqueda.';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+
+    list.innerHTML = filtered.map(o => `
+      <div class="order-card" data-id="${escapeHtml(o.id)}">
+        <div class="order-row">
+          <div class="order-row-left">
+            <div class="order-customer">${escapeHtml(o.customerName)}</div>
+            <div class="order-date">${formatDate(o.createdAt)}</div>
+          </div>
+          <div class="order-row-right">
+            <span class="status-badge status-${o.status}">${STATUS_LABELS[o.status] || o.status}</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="order-detail">
+          <div class="order-email">${escapeHtml(o.email)}</div>
+          ${renderAddress(o)}
+          ${o.trackingNumber ? `<div class="order-tracking"><span>Número de guía</span><b>${escapeHtml(o.trackingNumber)}</b></div>` : ''}
+          ${o.billing && o.billing.type === 'NIT' ? `<div class="order-billing">Factura: NIT ${escapeHtml(o.billing.nit)}${o.billing.name ? ' — ' + escapeHtml(o.billing.name) : ''}</div>` : '<div class="order-billing">Factura: Consumidor final</div>'}
+          <div class="order-items">
+            ${(o.items || []).map(it => `
+              <div class="order-item-row">
+                <span class="order-item-name">${escapeHtml(it.name)}</span>
+                <span class="order-item-qty">${it.quantity} × ${formatQ(it.price)}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="order-bottom">
+            <div>
+              <div class="order-total">${formatQ(o.total)}</div>
+              ${o.pointsEarned ? `<div class="order-points">+${o.pointsEarned} puntos al cliente</div>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('ordersList').addEventListener('click', (e) => {
+    const row = e.target.closest('.order-row');
+    if (!row) return;
+    row.closest('.order-card').classList.toggle('expanded');
+  });
+
+  document.getElementById('searchInput').addEventListener('input', render);
+
+  loadOrders();
+</script>
+
+</body>
+</html>
